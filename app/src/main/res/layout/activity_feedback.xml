@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/view_toolbar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#eee"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/edit_content"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_margin="10dp"
+            android:gravity="top"
+            android:hint="是您的意见让我们变得更好！"
+            android:maxLength="100"
+            android:textSize="17sp" />
+
+        <EditText
+            android:id="@+id/edit_contact"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:gravity="top"
+            android:hint="QQ/手机/邮箱"
+            android:maxLength="100"
+            android:textSize="17sp" />
+
+        <Button
+            android:id="@+id/btn_submit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/selector_btn_normal"
+            android:text="提交"
+            android:textColor="#fff"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+</LinearLayout>
