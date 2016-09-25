@@ -51,7 +51,7 @@ public abstract class DataFactory {
         public int x;
         public int y;
 
-        public TouchEntity(String imei, int x, int y) {
+        TouchEntity(String imei, int x, int y) {
             this.imei = imei;
             this.x = x;
             this.y = y;
