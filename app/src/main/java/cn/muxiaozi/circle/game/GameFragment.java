@@ -56,8 +56,7 @@ public class GameFragment extends Fragment implements GameContract.View {
         adapter.setOnItemClickListener(new GameListAdapter.OnItemClickListener() {
             @Override
             public void onClick(int gameID) {
-//                startGame(gameID);
-                startActivity(new Intent(getContext(), LinkActivity.class));
+                startGame(gameID);
             }
         });
 

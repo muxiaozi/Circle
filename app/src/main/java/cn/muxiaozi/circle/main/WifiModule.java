@@ -21,7 +21,7 @@ import cn.muxiaozi.circle.utils.InfoUtil;
  * <p>
  * wifi操作模块
  */
-public class WifiModule {
+class WifiModule {
     private WifiManager mWifiManager;
     private ConnectivityManager mConnectivityManager;
 
@@ -33,7 +33,7 @@ public class WifiModule {
         void onFailure(Exception e);
     }
 
-    public WifiModule(Context context) {
+    WifiModule(Context context) {
         mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -43,14 +43,14 @@ public class WifiModule {
     /**
      * 打开wifi
      */
-    public void openWifi(final OnProcessCallBack callBack) {
+    void openWifi(final OnProcessCallBack callBack) {
         //检测wifi热点如果是开启状态就关闭
         if (isWifiApEnabled()) {
             closeWifiAP();
         }
         mWifiManager.setWifiEnabled(true);
 
-        if(callBack == null){
+        if (callBack == null) {
             return;
         }
 
@@ -97,17 +97,17 @@ public class WifiModule {
     /**
      * 关闭wifi
      */
-    public void closeWifi() {
+    private void closeWifi() {
         mWifiManager.setWifiEnabled(false);
     }
 
     /**
      * 打开wifi热点
      */
-    public void openWifiAP(final OnProcessCallBack callBack) {
+    void openWifiAP(final OnProcessCallBack callBack) {
         openWifiAP(mMySSID, "");
 
-        if(callBack == null){
+        if (callBack == null) {
             return;
         }
 
@@ -154,7 +154,7 @@ public class WifiModule {
     /**
      * 关闭wifi热点
      */
-    public void closeWifiAP() {
+    void closeWifiAP() {
         if (isWifiApEnabled()) {
             try {
                 Method method = mWifiManager.getClass().getMethod("getWifiApConfiguration");
@@ -172,7 +172,7 @@ public class WifiModule {
     /**
      * 开始搜索附近wifi
      */
-    public List<ScanResult> getScanResults() {
+    List<ScanResult> getScanResults() {
         mWifiManager.startScan();
         return mWifiManager.getScanResults();
     }
@@ -182,7 +182,7 @@ public class WifiModule {
      *
      * @return 接入点的SSID
      */
-    public String getSSID() {
+    String getSSID() {
         return mWifiManager.getConnectionInfo().getSSID();
     }
 
@@ -202,7 +202,7 @@ public class WifiModule {
      *
      * @return 主机的IP地址
      */
-    public String getRemoteIpAddress() {
+    String getRemoteIpAddress() {
         DhcpInfo info = mWifiManager.getDhcpInfo();
         int ipAddress = info.serverAddress;
         return intToIp(ipAddress);
@@ -223,7 +223,7 @@ public class WifiModule {
      *
      * @return 连接的ID
      */
-    public int getNetworkId() {
+    int getNetworkId() {
         return mWifiManager.getConnectionInfo().getNetworkId();
     }
 
@@ -232,7 +232,7 @@ public class WifiModule {
      *
      * @param netId 指定ID
      */
-    public void disconnectWifi(int netId) {
+    void disconnectWifi(int netId) {
         mWifiManager.disableNetwork(netId);
         mWifiManager.removeNetwork(netId);
     }
@@ -245,7 +245,7 @@ public class WifiModule {
      * @param Type     类型
      * @return 配置信息
      */
-    public WifiConfiguration CreateWifiInfo(String SSID, String Password, int Type) {
+    private WifiConfiguration CreateWifiInfo(String SSID, String Password, int Type) {
         WifiConfiguration config = new WifiConfiguration();
         config.allowedAuthAlgorithms.clear();
         config.allowedGroupCiphers.clear();
@@ -314,7 +314,7 @@ public class WifiModule {
     /**
      * 开始连接到指定wifi热点
      */
-    public void connect(final String ssid, final OnProcessCallBack callBack) {
+    void connect(final String ssid, final OnProcessCallBack callBack) {
         //如果wifi不可用，则返回错误
         if (!isWifiEnabled()) {
             AsyncRun.run(new Runnable() {
@@ -423,11 +423,11 @@ public class WifiModule {
         }
     }
 
-    public boolean isWifiEnabled() {
+    boolean isWifiEnabled() {
         return mWifiManager.isWifiEnabled();
     }
 
-    public boolean isConnected(String ssid) {
+    private boolean isConnected(String ssid) {
         if (mWifiManager.getConnectionInfo().getSSID().equals("\"" + ssid + "\"") ||
                 mWifiManager.getConnectionInfo().getSSID().equals(ssid)) {
             NetworkInfo wifiNetworkInfo = mConnectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
@@ -441,7 +441,7 @@ public class WifiModule {
      *
      * @return wifi热点状态
      */
-    public boolean isWifiApEnabled() {
+    private boolean isWifiApEnabled() {
         try {
             Method method = mWifiManager.getClass().getMethod("isWifiApEnabled");
             method.setAccessible(true);
@@ -452,7 +452,7 @@ public class WifiModule {
         return false;
     }
 
-    public boolean isMobileDataOpen() {
+    boolean isMobileDataOpen() {
         Boolean isOpen = false;
         try {
             Method method = mConnectivityManager.getClass()
@@ -464,8 +464,7 @@ public class WifiModule {
         return isOpen;
     }
 
-
-    public void setMobileData(boolean enabled) {
+    void setMobileData(boolean enabled) {
         try {
             Method setMobileDataEnable = mConnectivityManager.getClass()
                     .getDeclaredMethod("setMobileDataEnabled", boolean.class);

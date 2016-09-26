@@ -7,19 +7,24 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.StringBuilder;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.muxiaozi.circle.base.Constants;
 import cn.muxiaozi.circle.game.framwork.BaseStage;
 import cn.muxiaozi.circle.game.link.DataFactory;
 import cn.muxiaozi.circle.game.link.MainGame;
 import cn.muxiaozi.circle.game.link.Res;
 import cn.muxiaozi.circle.game.link.actor.DiamondActor;
 import cn.muxiaozi.circle.game.link.actor.LinkActor;
+import cn.muxiaozi.circle.game.link.actor.ReadyActor;
 import cn.muxiaozi.circle.game.link.actor.TimeActor;
 import cn.muxiaozi.circle.net.DataService;
+import cn.muxiaozi.circle.utils.InfoUtil;
+import cn.muxiaozi.circle.utils.LogUtil;
 
 /**
  * Created by 慕宵子 on 2016/9/21 0021.
@@ -35,6 +40,8 @@ public class GameStage extends BaseStage<MainGame> {
     private LinkActor linkActor;
     //时间演员，用于显示时间
     private TimeActor timeActor;
+    //倒计时演员，用于显示倒计时
+    private ReadyActor readyActor;
 
     //宝石数组
     private DiamondActor[][] diamonds = new DiamondActor[Res.COL_NUM][Res.ROW_NUM];
@@ -52,12 +59,32 @@ public class GameStage extends BaseStage<MainGame> {
     //消除声音
     private Sound pairSound;
 
-    public GameStage(MainGame game, Viewport viewport) {
+    //当前玩家的索引，来自playerList
+    private int currentPlayerIndex = -1;
+
+    //自己的IMEI号码
+    private int myIndex;
+
+    //是否轮自己操作
+    private boolean isTurnMe = false;
+
+    //在哪个玩家身上卡住了
+    private int cutPlayer = -1;
+
+    public GameStage(final MainGame game, Viewport viewport, int index) {
         super(game, viewport);
+
+        LogUtil.d("player:" + game.getPlayers().length);
+        for (String player : game.getPlayers()) {
+            LogUtil.d(player);
+        }
 
         //从资源管理器获取纹理
         TextureAtlas atlas = game.getAssetManager().get(Res.Atlas.ATLAS_PATH, TextureAtlas.class);
         pairSound = game.getAssetManager().get(Res.Audio.PAIR, Sound.class);
+
+        //初始化自己的序号
+        this.myIndex = index;
 
         //初始化连接演员
         linkActor = new LinkActor(new Pixmap((int) game.getWorldWidth(), (int) game.getWorldHeight(),
@@ -65,12 +92,15 @@ public class GameStage extends BaseStage<MainGame> {
         addActor(linkActor);
 
         //初始化时间演员
-        timeActor = new TimeActor(atlas.findRegion(Res.Atlas.COMBO),atlas.findRegion(Res.Atlas.GRADE, 1));
+        timeActor = new TimeActor();
         timeActor.setBounds(0, getHeight() - 50, getWidth(), 50);
         timeActor.setOnTimeListener(new TimeActor.OnTimeListener() {
             @Override
             public void onTimeOut() {
-                showTips(true);
+                if (cutPlayer == -1) {
+                    cutPlayer = currentPlayerIndex;
+                }
+                requestTakeTurn();
             }
         });
         addActor(timeActor);
@@ -102,7 +132,36 @@ public class GameStage extends BaseStage<MainGame> {
             map[0][y] = map[Res.COL_NUM - 1][y] = -1;
         }
 
-        createMap();
+        //初始化准备演员
+        readyActor = new ReadyActor(atlas);
+        readyActor.setSize(200, 200);
+        readyActor.setCenter(getWidth() / 2, getHeight() / 2);
+        addActor(readyActor);
+        readyActor.setOnReadyListener(new ReadyActor.OnReadyListener() {
+            @Override
+            public void onReady(int time) {
+                game.send(DataFactory.packReady(time));
+                if (time == 0) {
+                    createMap();
+                    requestTakeTurn();
+                }
+            }
+        });
+        if (DataService.isServer()) {
+            readyActor.start();
+        }
+    }
+
+    /**
+     * 需要轮流
+     */
+    private void requestTakeTurn() {
+        if (DataService.isServer()) {
+            currentPlayerIndex = currentPlayerIndex < getGame().getPlayers().length - 1
+                    ? currentPlayerIndex + 1 : 0;
+            takeTurn(currentPlayerIndex);
+            getGame().send(DataFactory.packTurn(currentPlayerIndex));
+        }
     }
 
     /**
@@ -151,6 +210,10 @@ public class GameStage extends BaseStage<MainGame> {
                 setDiamondType(x, y, map[tmpX][tmpY]);
                 setDiamondType(tmpX, tmpY, tmpType);
             }
+        }
+
+        if (DataService.isServer()) {
+            getGame().send(DataFactory.packSyncMap(map));
         }
     }
 
@@ -380,8 +443,12 @@ public class GameStage extends BaseStage<MainGame> {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        Point touchPoint = getPointByTouch(screenX, screenY);
-        touchDiamond(touchPoint.x, touchPoint.y);
+        if (isTurnMe) {
+            Point touchPoint = getPointByTouch(screenX, screenY);
+            touchDiamond(touchPoint.x, touchPoint.y);
+            getGame().send(DataFactory.packTouch(
+                    new DataFactory.TouchEntity(myIndex, touchPoint.x, touchPoint.y)));
+        }
         return true;
     }
 
@@ -410,20 +477,22 @@ public class GameStage extends BaseStage<MainGame> {
 
                     pairSound.play();
                     linkActor.link(linkPath);
-                    timeActor.start();
+
+                    //没人被卡住
+                    cutPlayer = -1;
 
                     if (DataService.isServer()) {
                         //检测游戏是否结束
                         if (isGameOver()) {
                             createMap();
-                            getGame().send(DataFactory.packSyncMap(map));
                         }
 
                         // 判断死路则重排
                         while (!showTips(false)) {
                             upsetMap();
-                            getGame().send(DataFactory.packSyncMap(map));
                         }
+
+                        requestTakeTurn();
                     }
                 } else {
                     diamonds[focusPoint1.x][focusPoint1.y].setFocus(false);
@@ -447,6 +516,18 @@ public class GameStage extends BaseStage<MainGame> {
         }
     }
 
+    private void takeTurn(int index) {
+        currentPlayerIndex = index;
+
+        clearFocusPoint();
+        isTurnMe = myIndex == index;
+        timeActor.start();
+
+        if (cutPlayer == currentPlayerIndex) {
+            showTips(true);
+        }
+    }
+
     @Override
     public boolean receive(final byte[] data) {
         Gdx.app.postRunnable(new Runnable() {
@@ -461,11 +542,11 @@ public class GameStage extends BaseStage<MainGame> {
                         break;
 
                     case DataFactory.TYPE_TURN:
-
+                        takeTurn(DataFactory.unpackTurn(data));
                         break;
 
                     case DataFactory.TYPE_READY:
-
+                        readyActor.setValue(DataFactory.unpackReady(data));
                         break;
 
                     case DataFactory.TYPE_SYNC_MAP:

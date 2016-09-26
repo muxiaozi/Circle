@@ -38,4 +38,16 @@ public class Constants {
     //到服务器的连接断开
     public static final String ACTION_DISCONNECT = "cn.muxiaozi.disconnect";
 
+
+    public class Urls {
+        //七牛云地址
+        public static final String QINIU_HOST = "http://qiniu.muxiaozi.cn/apk/circle/";
+        public static final String APK_EXT = ".apk";
+
+        //服务器地址
+        static final String HOST = "http://muxiaozi.cn";
+
+        //获取版本信息
+        public static final String VERSION = HOST + "/app/circle/getVersion.php";
+    }
 }

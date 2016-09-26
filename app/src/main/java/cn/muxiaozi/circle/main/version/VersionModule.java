@@ -11,7 +11,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
-import cn.muxiaozi.circle.base.Urls;
+import cn.muxiaozi.circle.base.Constants;
 import cn.muxiaozi.circle.utils.HttpUtil;
 
 /**
@@ -19,10 +19,10 @@ import cn.muxiaozi.circle.utils.HttpUtil;
  * <p/>
  * 版本获取和下载
  */
-public class VersionModule {
-    public static final int WHAT_UPDATE = 1;    //更新进度
-    public static final int WHAT_SUCCESS = 2;   //更新成功
-    public static final int WHAT_FAIL = 3;      //更新失败
+class VersionModule {
+    static final int WHAT_UPDATE = 1;    //更新进度
+    static final int WHAT_SUCCESS = 2;   //更新成功
+    static final int WHAT_FAIL = 3;      //更新失败
 
     private boolean isDownloading;  //是否正在更新
 
@@ -31,24 +31,25 @@ public class VersionModule {
     //版本信息
     private static VersionInfo mVersionInfo;
 
-    public VersionModule() {
+    VersionModule() {
         mVersionInfo = new VersionInfo();
         isDownloading = false;
     }
 
     /**
      * 获取最新版本信息
+     *
      * @param callBack 新版本信息接口回调
      */
-    public void getNewestVersionInfo(final VersionInfoCallBack callBack) {
+    void getNewestVersionInfo(final VersionInfoCallBack callBack) {
         final HashMap<String, String> requestParams = new HashMap<>(1);
         requestParams.put("key", "141022");
-        HttpUtil.post(Urls.VERSION, requestParams, new HttpUtil.HttpResponseCallBack() {
+        HttpUtil.post(Constants.Urls.VERSION, requestParams, new HttpUtil.HttpResponseCallBack() {
             @Override
             public void onSuccess(String result) {
                 String results[] = result.split("#");
                 mVersionInfo.setVersion(results[0]);
-                mVersionInfo.setUrl(Urls.QINIU_HOST + results[0] + Urls.APK_EXT);
+                mVersionInfo.setUrl(Constants.Urls.QINIU_HOST + results[0] + Constants.Urls.APK_EXT);
                 mVersionInfo.setDescription(results[1]);
                 callBack.onResult(mVersionInfo);
             }
@@ -70,7 +71,7 @@ public class VersionModule {
      *
      * @return 下载状态
      */
-    public boolean isDownloading() {
+    boolean isDownloading() {
         return isDownloading;
     }
 
@@ -79,7 +80,7 @@ public class VersionModule {
      *
      * @param handler 接受下载结果
      */
-    public void downloadAPK(final Handler handler) {
+    void downloadAPK(final Handler handler) {
         if (mVersionInfo.getUrl() != null) {
             if (!isDownloading) {
                 isDownloading = true;
@@ -112,7 +113,7 @@ public class VersionModule {
                             while ((len = is.read(data, 0, 2048)) != -1) {
                                 fos.write(data, 0, len);
                                 downloadSize += len;
-                                if(progress != (float) downloadSize / apkSize * 100){
+                                if (progress != (float) downloadSize / apkSize * 100) {
                                     progress = (int) ((float) downloadSize / apkSize * 100);
                                     handler.obtainMessage(WHAT_UPDATE, progress, 0).sendToTarget();
                                 }

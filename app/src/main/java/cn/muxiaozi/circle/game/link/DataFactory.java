@@ -47,12 +47,12 @@ public abstract class DataFactory {
     }
 
     public static class TouchEntity {
-        String imei;
+        int index;
         public int x;
         public int y;
 
-        TouchEntity(String imei, int x, int y) {
-            this.imei = imei;
+        public TouchEntity(int index, int x, int y) {
+            this.index = index;
             this.x = x;
             this.y = y;
         }
@@ -66,7 +66,7 @@ public abstract class DataFactory {
         DataOutputStream dos = new DataOutputStream(baos);
         try {
             dos.writeByte(TYPE_TOUCH);
-            dos.writeUTF(entity.imei);
+            dos.writeInt(entity.index);
             dos.writeInt(entity.x);
             dos.writeInt(entity.y);
         } catch (IOException ignored) {
@@ -79,7 +79,7 @@ public abstract class DataFactory {
         DataInputStream dis = new DataInputStream(bais);
         try {
             if (dis.readByte() == TYPE_TOUCH) {
-                return new TouchEntity(dis.readUTF(), dis.readInt(), dis.readInt());
+                return new TouchEntity(dis.readInt(), dis.readInt(), dis.readInt());
             }
         } catch (IOException ignored) {
         }
@@ -89,27 +89,27 @@ public abstract class DataFactory {
     /**
      * 轮流
      */
-    public static byte[] packTurn(String imei) {
+    public static byte[] packTurn(int index) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);
         try {
             dos.writeByte(TYPE_TURN);
-            dos.writeUTF(imei);
+            dos.writeInt(index);
         } catch (IOException ignored) {
         }
         return baos.toByteArray();
     }
 
-    public static String unpackTurn(byte[] data) {
+    public static int unpackTurn(byte[] data) {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
             if (dis.readByte() == TYPE_TURN) {
-                return dis.readUTF();
+                return dis.readInt();
             }
         } catch (IOException ignored) {
         }
-        return null;
+        return 0;
     }
 
 

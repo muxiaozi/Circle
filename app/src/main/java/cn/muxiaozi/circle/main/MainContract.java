@@ -13,7 +13,7 @@ import cn.muxiaozi.circle.base.BaseView;
  *
  * 契约类
  */
-public interface MainContract {
+interface MainContract {
 
     abstract class Presenter extends BasePresenter<View>{
         public Presenter(Context context, View view) {

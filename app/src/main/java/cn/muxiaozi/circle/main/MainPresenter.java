@@ -15,19 +15,19 @@ import cn.muxiaozi.circle.room.RoomActivity;
 /**
  * Created by 慕宵子 on 2016/4/22.
  */
-public class MainPresenter extends MainContract.Presenter {
-    public static final int STATE_NONE = 0;
-    public static final int STATE_WIFI = 1;
-    public static final int STATE_WIFIAP = 2;
+class MainPresenter extends MainContract.Presenter {
+    private static final int STATE_NONE = 0;
+    private static final int STATE_WIFI = 1;
+    private static final int STATE_WIFI_AP = 2;
 
-    public int mCurrentState = STATE_NONE;
+    private int mCurrentState = STATE_NONE;
 
     private WifiModule mWifiModule;
 
     private boolean isWifiAlreadyOpen;
     private boolean isDataAlreadyOpen;
 
-    public MainPresenter(Context context, MainContract.View view) {
+    MainPresenter(Context context, MainContract.View view) {
         super(context, view);
 
         mWifiModule = new WifiModule(context);
@@ -105,7 +105,7 @@ public class MainPresenter extends MainContract.Presenter {
             public void onSuccess(String message) {
                 mView.hideProgressDialog();
                 mView.showTips(message);
-                mCurrentState = STATE_WIFIAP;
+                mCurrentState = STATE_WIFI_AP;
                 mView.setFabMenuWorkState(true);
 
                 //启动服务器模式
@@ -147,7 +147,7 @@ public class MainPresenter extends MainContract.Presenter {
             if (mWifiModule.getSSID().contains("shw")) {
                 mWifiModule.disconnectWifi(mWifiModule.getNetworkId());
             }
-        } else if (mCurrentState == STATE_WIFIAP) {
+        } else if (mCurrentState == STATE_WIFI_AP) {
             mWifiModule.closeWifiAP();
         }
         mCurrentState = STATE_NONE;

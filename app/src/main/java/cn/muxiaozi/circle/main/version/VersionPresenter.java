@@ -14,20 +14,18 @@ import cn.muxiaozi.circle.utils.NotificationUtil;
 
 /**
  * Created by 慕宵子 on 2016/7/30.
+ *
+ * 版本控制
  */
 public class VersionPresenter extends VersionContract.Presenter {
 
     private VersionModule mVersionModule;
-
-    private NotificationManager mNotificationManager;
 
     private Notification.Builder mBuilder;
 
     public VersionPresenter(Context context, VersionContract.View view) {
         super(context, view);
         mVersionModule = new VersionModule();
-        mNotificationManager = (NotificationManager)
-                context.getSystemService(Context.NOTIFICATION_SERVICE);
         mBuilder = new Notification.Builder(context);
     }
 
@@ -42,14 +40,11 @@ public class VersionPresenter extends VersionContract.Presenter {
                         mBuilder.setContentTitle("正在下载...");
                         mBuilder.setContentText("");
                         mBuilder.setProgress(100, msg.arg1, false);
-                        mNotificationManager.notify(0, mBuilder.build());
                         break;
                     case VersionModule.WHAT_SUCCESS:
-                        mNotificationManager.cancel(0);
                         CommonUtil.install(mContext, (String) msg.obj);
                         break;
                     case VersionModule.WHAT_FAIL:
-                        mNotificationManager.cancel(0);
                         mView.showTips("下载新版本失败!");
                         break;
                 }
