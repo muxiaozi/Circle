@@ -71,7 +71,7 @@ public class LoadScreen extends BaseScreen<MainGame> {
     }
 
     @Override
-    public boolean receive(byte[] data) {
+    public void receive(byte[] data) {
         switch (data[0]) {
             case DataFactory.TYPE_REQUEST_PREPARE:
                 getGame().send(DataFactory.packPrepare(myImei));
@@ -92,7 +92,6 @@ public class LoadScreen extends BaseScreen<MainGame> {
                 prepare(imei);
                 break;
         }
-        return true;
     }
 
     /**

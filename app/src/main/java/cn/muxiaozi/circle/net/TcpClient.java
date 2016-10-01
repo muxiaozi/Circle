@@ -9,7 +9,7 @@ import cn.muxiaozi.circle.base.Constants;
 import cn.muxiaozi.circle.room.UserBean;
 import cn.muxiaozi.circle.utils.LogUtil;
 
-public class TcpClient implements Runnable, ISocket {
+class TcpClient implements Runnable, ISocket {
     //IP
     private String mRemoteIP;
 
@@ -26,7 +26,7 @@ public class TcpClient implements Runnable, ISocket {
     //是否连接
     private boolean isRunning;
 
-    public TcpClient(IDataService listener, String remoteIP) {
+    TcpClient(IDataService listener, String remoteIP) {
         mRemoteIP = remoteIP;
         mDelivery = listener;
 

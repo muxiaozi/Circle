@@ -19,12 +19,12 @@ public abstract class DataFactory {
     /**
      * 游戏结束
      */
-    public static final byte TYPE_GAME_OVER = 2;
+    public static final byte TYPE_GAME_OVER = 3;
 
     /**
      * 小鸟用力飞
      */
-    public static final byte TYPE_JUMP = 3;
+    public static final byte TYPE_JUMP = 2;
 
     /**
      * 小鸟死亡
@@ -54,7 +54,7 @@ public abstract class DataFactory {
     /**
      * 进入加载界面，并准备完毕
      */
-    public static final byte TYPE_PREPARE = 9;
+    public static final byte TYPE_PREPARE = 10;
 
     /**
      * 玩家进入游戏
@@ -65,7 +65,8 @@ public abstract class DataFactory {
         try {
             dos.writeByte(TYPE_PREPARE);
             dos.writeUTF(imei);
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return baos.toByteArray();
     }
@@ -74,10 +75,10 @@ public abstract class DataFactory {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
-            if (dis.readByte() == TYPE_PREPARE) {
-                return dis.readUTF();
-            }
-        } catch (IOException ignored) {
+            dis.readByte();
+            return dis.readUTF();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -105,13 +106,13 @@ public abstract class DataFactory {
         DataInputStream dis = new DataInputStream(bais);
         String[] imeis = null;
         try {
-            if (dis.readByte() == TYPE_START_GAME) {
-                imeis = new String[dis.readByte()];
-                for (int i = 0; i < imeis.length; i++) {
-                    imeis[i] = dis.readUTF();
-                }
+            dis.readByte();
+            imeis = new String[dis.readByte()];
+            for (int i = 0; i < imeis.length; i++) {
+                imeis[i] = dis.readUTF();
             }
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return imeis;
     }
@@ -139,13 +140,13 @@ public abstract class DataFactory {
         DataInputStream dis = new DataInputStream(bais);
         int[] grades = null;
         try {
-            if (dis.readByte() == TYPE_GAME_OVER) {
-                grades = new int[dis.readByte()];
-                for (int i = 0; i < grades.length; i++) {
-                    grades[i] = dis.readInt();
-                }
+            dis.readByte();
+            grades = new int[dis.readByte()];
+            for (int i = 0; i < grades.length; i++) {
+                grades[i] = dis.readInt();
             }
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return grades;
     }
@@ -171,10 +172,10 @@ public abstract class DataFactory {
         DataInputStream dis = new DataInputStream(bais);
         JumpEntity jumpEntity = null;
         try {
-            if (dis.readByte() == TYPE_JUMP) {
-                jumpEntity = new JumpEntity(dis.readUTF(), dis.readFloat());
-            }
-        } catch (IOException ignored) {
+            dis.readByte();
+            jumpEntity = new JumpEntity(dis.readUTF(), dis.readFloat());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return jumpEntity;
     }
@@ -198,10 +199,10 @@ public abstract class DataFactory {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
-            if (dis.readByte() == TYPE_DIE) {
-                return dis.readUTF();
-            }
-        } catch (IOException ignored) {
+            dis.readByte();
+            return dis.readUTF();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -225,12 +226,12 @@ public abstract class DataFactory {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
-            if (dis.readByte() == TYPE_GENERATE_BAR) {
-                return dis.readFloat();
-            }
-        } catch (IOException ignored) {
+            dis.readByte();
+            return dis.readFloat();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return 0.0F;
+        return 0F;
     }
 
     /**
@@ -252,10 +253,10 @@ public abstract class DataFactory {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
-            if (dis.readByte() == TYPE_OVER_BAR) {
-                return dis.readUTF();
-            }
-        } catch (IOException ignored) {
+            dis.readByte();
+            return dis.readUTF();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -288,10 +289,10 @@ public abstract class DataFactory {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
-            if (dis.readByte() == TYPE_READY) {
-                return dis.readByte();
-            }
-        } catch (IOException ignored) {
+            dis.readByte();
+            return dis.readByte();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return 3;
     }

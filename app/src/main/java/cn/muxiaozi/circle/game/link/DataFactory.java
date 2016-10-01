@@ -38,10 +38,10 @@ public abstract class DataFactory {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
-            if (dis.readByte() == TYPE_READY) {
-                return dis.readByte();
-            }
-        } catch (IOException ignored) {
+            dis.readByte();
+            return dis.readByte();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return 3;
     }
@@ -78,10 +78,10 @@ public abstract class DataFactory {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
-            if (dis.readByte() == TYPE_TOUCH) {
-                return new TouchEntity(dis.readInt(), dis.readInt(), dis.readInt());
-            }
-        } catch (IOException ignored) {
+            dis.readByte();
+            return new TouchEntity(dis.readInt(), dis.readInt(), dis.readInt());
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -104,10 +104,10 @@ public abstract class DataFactory {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
-            if (dis.readByte() == TYPE_TURN) {
-                return dis.readInt();
-            }
-        } catch (IOException ignored) {
+            dis.readByte();
+            return dis.readInt();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return 0;
     }
@@ -133,14 +133,14 @@ public abstract class DataFactory {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
-            if (dis.readByte() == TYPE_SYNC_MAP) {
-                byte[][] map = new byte[Res.COL_NUM][Res.ROW_NUM];
-                for (int i = 0; i < Res.COL_NUM; i++) {
-                    dis.read(map[i], 0, Res.ROW_NUM);
-                }
-                return map;
+            dis.readByte();
+            byte[][] map = new byte[Res.COL_NUM][Res.ROW_NUM];
+            for (int i = 0; i < Res.COL_NUM; i++) {
+                dis.read(map[i], 0, Res.ROW_NUM);
             }
-        } catch (IOException ignored) {
+            return map;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }

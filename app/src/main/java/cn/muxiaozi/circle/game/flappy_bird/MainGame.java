@@ -240,11 +240,11 @@ public class MainGame extends BaseGame {
     }
 
     @Override
-    public boolean receive(byte[] data) {
+    public void receive(byte[] data) {
         if (data[0] == DataFactory.TYPE_DISCONNECT_SERVER) {
             Gdx.app.exit();
         }
-        return super.receive(data);
+        super.receive(data);
     }
 }
 

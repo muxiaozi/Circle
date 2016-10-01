@@ -13,7 +13,7 @@ import cn.muxiaozi.circle.base.Constants;
 import cn.muxiaozi.circle.room.UserBean;
 import cn.muxiaozi.circle.utils.LogUtil;
 
-public class TcpServer implements Runnable, ISocket {
+class TcpServer implements Runnable, ISocket {
 
     //服务端ServerSocket对象
     private static ServerSocket mServerSocket;
@@ -27,7 +27,7 @@ public class TcpServer implements Runnable, ISocket {
     //Server运行状态
     private boolean isRunning;
 
-    public TcpServer(IDataService delivery) {
+    TcpServer(IDataService delivery) {
         mDelivery = delivery;
 
         //开启端口监听线程
@@ -76,7 +76,7 @@ public class TcpServer implements Runnable, ISocket {
         private DataOutputStream dos;
         private String imei;
 
-        public Client(Socket socket) {
+        Client(Socket socket) {
             this.socket = socket;
             mSockets.add(this.socket);
         }
@@ -113,8 +113,10 @@ public class TcpServer implements Runnable, ISocket {
                         LogUtil.i("新用户：" + imei);
                     }
 
-                    //处理信息
-                    if (!mDelivery.receive(data)) {
+                    mDelivery.receive(data);
+
+                    //如果是偶数就转发
+                    if ((data[0] & 1) == 0) {
                         sendDataExceptOne(data, socket);
                     }
                 }
@@ -124,7 +126,7 @@ public class TcpServer implements Runnable, ISocket {
                 LogUtil.i("客户端" + imei + "断开连接...");
 
                 //给所有客户端发送某个客户离开的消息
-                if(imei != null){
+                if (imei != null) {
                     final byte[] outData = DataFactory.packFriendOut(imei);
                     sendDataExceptOne(outData, socket);
                     mDelivery.receive(outData);
@@ -192,5 +194,4 @@ public class TcpServer implements Runnable, ISocket {
             e.printStackTrace();
         }
     }
-
 }

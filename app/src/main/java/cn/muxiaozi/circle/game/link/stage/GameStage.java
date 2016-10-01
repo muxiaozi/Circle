@@ -20,6 +20,7 @@ import cn.muxiaozi.circle.game.link.MainGame;
 import cn.muxiaozi.circle.game.link.Res;
 import cn.muxiaozi.circle.game.link.actor.DiamondActor;
 import cn.muxiaozi.circle.game.link.actor.LinkActor;
+import cn.muxiaozi.circle.game.link.actor.PlayerActor;
 import cn.muxiaozi.circle.game.link.actor.ReadyActor;
 import cn.muxiaozi.circle.game.link.actor.TimeActor;
 import cn.muxiaozi.circle.net.DataService;
@@ -42,6 +43,8 @@ public class GameStage extends BaseStage<MainGame> {
     private TimeActor timeActor;
     //倒计时演员，用于显示倒计时
     private ReadyActor readyActor;
+    //玩家管理器
+    private PlayerActor playerActor;
 
     //宝石数组
     private DiamondActor[][] diamonds = new DiamondActor[Res.COL_NUM][Res.ROW_NUM];
@@ -131,6 +134,10 @@ public class GameStage extends BaseStage<MainGame> {
         for (int y = 0; y < Res.ROW_NUM; y++) {
             map[0][y] = map[Res.COL_NUM - 1][y] = -1;
         }
+
+        playerActor = new PlayerActor(new Pixmap((int)getWidth(), 40, Pixmap.Format.RGB888),
+                game.getPlayers().length, myIndex);
+        addActor(playerActor);
 
         //初始化准备演员
         readyActor = new ReadyActor(atlas);
@@ -519,6 +526,8 @@ public class GameStage extends BaseStage<MainGame> {
     private void takeTurn(int index) {
         currentPlayerIndex = index;
 
+        playerActor.takeTurn(index);
+
         clearFocusPoint();
         isTurnMe = myIndex == index;
         timeActor.start();
@@ -529,7 +538,7 @@ public class GameStage extends BaseStage<MainGame> {
     }
 
     @Override
-    public boolean receive(final byte[] data) {
+    public void receive(final byte[] data) {
         Gdx.app.postRunnable(new Runnable() {
             @Override
             public void run() {
@@ -564,7 +573,5 @@ public class GameStage extends BaseStage<MainGame> {
                 }
             }
         });
-
-        return false;
     }
 }

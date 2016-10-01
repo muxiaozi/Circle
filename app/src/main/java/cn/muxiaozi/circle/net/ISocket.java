@@ -3,7 +3,7 @@ package cn.muxiaozi.circle.net;
 /**
  * Created by lol_w on 2016/9/1 0001.
  */
-public interface ISocket {
+interface ISocket {
     /**
      * 发送数据
      * @param data 数据

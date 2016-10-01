@@ -86,7 +86,7 @@ public class GameOverStage extends BaseStage<MainGame> {
     }
 
     @Override
-    public boolean receive(byte[] data) {
+    public void receive(byte[] data) {
         switch (data[0]) {
             case DataFactory.TYPE_REQUEST_PREPARE:
             case DataFactory.TYPE_READY:
@@ -101,7 +101,6 @@ public class GameOverStage extends BaseStage<MainGame> {
             default:
                 break;
         }
-        return true;
     }
 }
 

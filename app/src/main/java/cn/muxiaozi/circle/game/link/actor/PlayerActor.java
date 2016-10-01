@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-import cn.muxiaozi.circle.game.framwork.BaseActor;
+import cn.muxiaozi.circle.utils.LogUtil;
 
 /**
  * Created by 慕宵子 on 2016/9/25 0025.
@@ -15,11 +15,20 @@ import cn.muxiaozi.circle.game.framwork.BaseActor;
 
 public class PlayerActor extends Actor {
     private TextureRegion background;
-    private TextureRegion foreground;
+    private TextureRegion meRegion;
+    private TextureRegion otherRegion;
+
+    private int currentIndex;
+
+    private int myIndex;
+
+    private int cellWidth;
+
     private int playerCount;
 
-    PlayerActor(Pixmap pixmap, int playerCount) {
-        int cellWidth = pixmap.getWidth() / playerCount;
+    public PlayerActor(Pixmap pixmap, int playerCount, int myIndex) {
+        setSize(pixmap.getWidth(), pixmap.getHeight());
+        cellWidth = pixmap.getWidth() / playerCount;
         pixmap.setColor(Color.WHITE);
         pixmap.fill();
         pixmap.setColor(Color.BLACK);
@@ -31,16 +40,22 @@ public class PlayerActor extends Actor {
         Pixmap forePixmap = new Pixmap(20, 10, Pixmap.Format.RGB888);
         forePixmap.setColor(Color.WHITE);
         forePixmap.fill();
-        forePixmap.setColor(Color.DARK_GRAY);
+        forePixmap.setColor(Color.GREEN);
         forePixmap.fillRectangle(0, 0, 10, 10);
-        forePixmap.setColor(Color.LIGHT_GRAY);
+        forePixmap.setColor(Color.GRAY);
         forePixmap.fillRectangle(10, 0, 10, 10);
+        Texture texture = new Texture(forePixmap);
 
+        meRegion = new TextureRegion(texture, 0, 0, 10, 10);
+        otherRegion = new TextureRegion(texture, 10, 0, 10, 10);
+
+        currentIndex = 0;
+        this.myIndex = myIndex;
         this.playerCount = playerCount;
     }
 
-    void takeTurn(int index) {
-
+    public void takeTurn(int index) {
+        currentIndex = index;
     }
 
     @Override
@@ -59,12 +74,16 @@ public class PlayerActor extends Actor {
                 getScaleX(), getScaleY(),
                 getRotation());
 
-        batch.draw(foreground,
-                getX(), getY(),
-                getOriginX(), getOriginY(),
-                getWidth(), getHeight(),
-                getScaleX(), getScaleY(),
-                getRotation());
+        for (int i = 0; i < playerCount; i++) {
+            if (i == currentIndex) {
+                batch.draw(i == myIndex ? meRegion : otherRegion,
+                        getX() + cellWidth * i + 5, getY() + 5,
+                        getOriginX(), getOriginY(),
+                        cellWidth - 10, getHeight() - 10,
+                        getScaleX(), getScaleY(),
+                        getRotation());
+            }
+        }
 
         batch.setColor(tempBatchColor);
     }

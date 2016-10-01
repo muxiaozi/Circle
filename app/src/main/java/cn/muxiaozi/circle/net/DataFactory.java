@@ -21,26 +21,26 @@ public abstract class DataFactory {
     static final byte TYPE_HEART_BEAT = 0;
 
     //朋友加入
-    public static final byte TYPE_FRIEND_IN = -1;
+    public static final byte TYPE_FRIEND_IN = -2;
 
     //朋友离开
-    public static final byte TYPE_FRIEND_OUT = -2;
+    public static final byte TYPE_FRIEND_OUT = -4;
 
     //与服务器连接断开
-    public static final byte TYPE_DISCONNECT_SERVER = -3;
+    public static final byte TYPE_DISCONNECT_SERVER = -6;
 
     //房间内准备
-    public static final byte TYPE_PREPARE = -4;
+    public static final byte TYPE_PREPARE = -8;
 
     //开始游戏（丛游戏大厅到游戏界面）
-    public static final byte TYPE_START_GAME = -5;
+    public static final byte TYPE_START_GAME = -10;
 
     /**
      * 打包心跳数据
      *
      * @return 数据
      */
-    public static byte[] packHeartBeat() {
+    static byte[] packHeartBeat() {
         byte[] data = new byte[1];
         data[0] = TYPE_HEART_BEAT;
         return data;
@@ -51,7 +51,7 @@ public abstract class DataFactory {
      *
      * @return 数据
      */
-    public static byte[] packDisconnectServer() {
+    static byte[] packDisconnectServer() {
         byte[] data = new byte[1];
         data[0] = TYPE_DISCONNECT_SERVER;
         return data;
@@ -63,7 +63,7 @@ public abstract class DataFactory {
      * @param userBean 朋友信息
      * @return 数据
      */
-    public static byte[] packFriendIn(UserBean userBean) {
+    static byte[] packFriendIn(UserBean userBean) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);
         try {
@@ -85,19 +85,18 @@ public abstract class DataFactory {
      * @param data 数据
      * @return 朋友信息
      */
-    public static UserBean unpackFriendIn(byte[] data) {
+    static UserBean unpackFriendIn(byte[] data) {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         UserBean userBean = null;
         try {
-            if (dis.readByte() == TYPE_FRIEND_IN) {
-                userBean = new UserBean();
-                userBean.setHeadImage(dis.readInt());
-                userBean.setName(dis.readUTF());
-                userBean.setAutograph(dis.readUTF());
-                userBean.setImei(dis.readUTF());
-                userBean.setPrepare(dis.readBoolean());
-            }
+            dis.readByte();
+            userBean = new UserBean();
+            userBean.setHeadImage(dis.readInt());
+            userBean.setName(dis.readUTF());
+            userBean.setAutograph(dis.readUTF());
+            userBean.setImei(dis.readUTF());
+            userBean.setPrepare(dis.readBoolean());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -110,7 +109,7 @@ public abstract class DataFactory {
      * @param imei 朋友识别号
      * @return 数据
      */
-    public static byte[] packFriendOut(String imei) {
+    static byte[] packFriendOut(String imei) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(baos);
         try {
@@ -128,13 +127,12 @@ public abstract class DataFactory {
      * @param data 数据
      * @return 朋友识别号
      */
-    public static String unpackFriendOut(byte[] data) {
+    static String unpackFriendOut(byte[] data) {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
-            if (dis.readByte() == TYPE_FRIEND_OUT) {
-                return dis.readUTF();
-            }
+            dis.readByte();
+            return dis.readUTF();
         } catch (IOException ignored) {
         }
         return null;
@@ -185,21 +183,19 @@ public abstract class DataFactory {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
-            if (dis.readByte() == TYPE_START_GAME) {
-                final int gameID = dis.readInt();
-                final int length = dis.readInt();
-                String[] players = new String[length];
-                for (int i = 0; i < length; i++) {
-                    players[i] = dis.readUTF();
-                }
-                return new StartGameEntity(gameID, players);
+            dis.readByte();
+            final int gameID = dis.readInt();
+            final int length = dis.readInt();
+            String[] players = new String[length];
+            for (int i = 0; i < length; i++) {
+                players[i] = dis.readUTF();
             }
+            return new StartGameEntity(gameID, players);
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
-
 
     /**
      * 准备状态
@@ -231,9 +227,8 @@ public abstract class DataFactory {
         ByteArrayInputStream bais = new ByteArrayInputStream(data);
         DataInputStream dis = new DataInputStream(bais);
         try {
-            if (dis.readByte() == TYPE_PREPARE) {
-                return new PrepareEntity(dis.readUTF(), dis.readBoolean());
-            }
+            dis.readByte();
+            return new PrepareEntity(dis.readUTF(), dis.readBoolean());
         } catch (IOException e) {
             e.printStackTrace();
         }

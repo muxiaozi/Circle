@@ -7,7 +7,7 @@ import cn.muxiaozi.circle.room.UserBean;
  * <p>
  * 这个接口用于处理接收到的各种消息
  */
-public interface IDataService extends IReceiver {
+interface IDataService extends IReceiver {
 
     /**
      * 获取用户信息接口

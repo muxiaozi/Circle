@@ -8,6 +8,8 @@ import android.os.IBinder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 import cn.muxiaozi.circle.base.Constants;
 import cn.muxiaozi.circle.room.UserBean;
@@ -25,16 +27,21 @@ public class DataService extends Service implements IDataService {
 
     private static int mState = STATE_NONE;
 
-    //UDP服务端或客户端实例
+    //服务端或客户端实例
     private ISocket mSocket;
 
     //维护一个在线朋友列表
     private final HashMap<String, UserBean> mOnlineFriends =
             new HashMap<>(Constants.MAX_CLIENT_NUM);
 
-    //消息监听接口
-    private IReceiver mGameDataListener;
-    private IReceiver mRoomDataListener;
+    //消息队列
+    private BlockingQueue<byte[]> dataQueue;
+
+    //如果程序不退出，就一直执行
+    private boolean isExit = false;
+
+    //观察者
+    private ArrayList<IReceiver> observers;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -44,9 +51,30 @@ public class DataService extends Service implements IDataService {
     @Override
     public void onCreate() {
         super.onCreate();
+        observers = new ArrayList<>(3);
+        dataQueue = new ArrayBlockingQueue<>(8);
+        new Thread(runDataQueue).start();
+
         mOnlineFriends.clear();
         mOnlineFriends.put(InfoUtil.getImei(this), InfoUtil.getMyInfo(this));
     }
+
+    /**
+     * 分发数据
+     */
+    private Runnable runDataQueue = new Runnable() {
+        @Override
+        public void run() {
+            while (!isExit) {
+                byte[] data = dataQueue.poll();
+                if (data != null) {
+                    for (IReceiver receiver : observers) {
+                        receiver.receive(data);
+                    }
+                }
+            }
+        }
+    };
 
     /**
      * 获取当前角色状态
@@ -113,39 +141,26 @@ public class DataService extends Service implements IDataService {
     }
 
     @Override
-    public boolean receive(byte[] data) {
-        if (data[0] < 0) {
-            switch (data[0]) {
-                case DataFactory.TYPE_FRIEND_IN:    //朋友加入数据
-                    onFriendIn(DataFactory.unpackFriendIn(data));
-                    break;
-                case DataFactory.TYPE_FRIEND_OUT:   //朋友退出数据
-                    onFriendOut(DataFactory.unpackFriendOut(data));
-                    break;
-                case DataFactory.TYPE_PREPARE:      //玩家在游戏大厅改变准备状态
-                    DataFactory.PrepareEntity entity = DataFactory.unpackPrepareState(data);
-                    UserBean player = mOnlineFriends.get(entity.imei);
-                    if (player != null) {
-                        player.setPrepare(entity.isPrepare);
-                    }
-                    break;
-                case DataFactory.TYPE_DISCONNECT_SERVER:
-                    onDisconnectToServer();
-                    break;
-            }
-
-            if (mRoomDataListener != null) {
-                mRoomDataListener.receive(data);
-            }
-
-            if (mGameDataListener != null) {
-                mGameDataListener.receive(data);
-            }
-
-            return false;
+    public void receive(byte[] data) {
+        switch (data[0]) {
+            case DataFactory.TYPE_FRIEND_IN:    //朋友加入数据
+                onFriendIn(DataFactory.unpackFriendIn(data));
+                break;
+            case DataFactory.TYPE_FRIEND_OUT:   //朋友退出数据
+                onFriendOut(DataFactory.unpackFriendOut(data));
+                break;
+            case DataFactory.TYPE_PREPARE:      //玩家在游戏大厅改变准备状态
+                DataFactory.PrepareEntity entity = DataFactory.unpackPrepareState(data);
+                UserBean player = mOnlineFriends.get(entity.imei);
+                if (player != null) {
+                    player.setPrepare(entity.isPrepare);
+                }
+                break;
+            case DataFactory.TYPE_DISCONNECT_SERVER:
+                onDisconnectToServer();
+                break;
         }
-
-        return mGameDataListener == null || mGameDataListener.receive(data);
+        dataQueue.offer(data);
     }
 
     public void onDisconnectToServer() {
@@ -193,18 +208,19 @@ public class DataService extends Service implements IDataService {
         }
 
         // 设置游戏消息监听器
-        public void setGameDataListener(IReceiver l) {
-            mGameDataListener = l;
+        public void addObserver(IReceiver receiver) {
+            observers.add(receiver);
         }
 
         // 设置房间消息监听器
-        public void setRoomDataListener(IReceiver l) {
-            mRoomDataListener = l;
+        public void removeObserver(IReceiver receiver) {
+            observers.remove(receiver);
         }
     }
 
     @Override
     public void onDestroy() {
+        isExit = true;
         if (mState != STATE_NONE && mSocket != null) {
             mSocket.close();
         }

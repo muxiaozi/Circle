@@ -10,15 +10,15 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import cn.muxiaozi.circle.game.flappy_bird.DataFactory;
+import cn.muxiaozi.circle.game.flappy_bird.GameState;
 import cn.muxiaozi.circle.game.flappy_bird.MainGame;
+import cn.muxiaozi.circle.game.flappy_bird.Res;
 import cn.muxiaozi.circle.game.flappy_bird.actor.BarActor;
 import cn.muxiaozi.circle.game.flappy_bird.actor.BirdGroup;
 import cn.muxiaozi.circle.game.flappy_bird.actor.FloorActor;
 import cn.muxiaozi.circle.game.flappy_bird.actor.NumGroup;
 import cn.muxiaozi.circle.game.flappy_bird.actor.ReadyActor;
-import cn.muxiaozi.circle.game.flappy_bird.DataFactory;
-import cn.muxiaozi.circle.game.flappy_bird.GameState;
-import cn.muxiaozi.circle.game.flappy_bird.Res;
 import cn.muxiaozi.circle.game.framwork.BaseActor;
 import cn.muxiaozi.circle.game.framwork.BaseStage;
 import cn.muxiaozi.circle.game.utils.CollisionUtils;
@@ -419,7 +419,7 @@ public class GameStage extends BaseStage<MainGame> {
     }
 
     @Override
-    public boolean receive(final byte[] data) {
+    public void receive(final byte[] data) {
         String imei;
         switch (data[0]) {
             case DataFactory.TYPE_JUMP:
@@ -459,7 +459,6 @@ public class GameStage extends BaseStage<MainGame> {
                 }
                 break;
         }
-        return false;
     }
 
     /**
@@ -467,7 +466,7 @@ public class GameStage extends BaseStage<MainGame> {
      *
      * @param imei
      */
-    public void focusBird(String imei) {
+    private void focusBird(String imei) {
         int index;
         for (index = 0; index < players.length; index++) {
             if (players[index].equals(imei)) {

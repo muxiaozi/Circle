@@ -9,8 +9,8 @@ import android.os.IBinder;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 
 import cn.muxiaozi.circle.base.Constants;
-import cn.muxiaozi.circle.game.framwork.BaseGame;
 import cn.muxiaozi.circle.net.DataService;
+import cn.muxiaozi.circle.net.ISender;
 
 /**
  * Created by 慕宵子 on 2016/9/18 0018.
@@ -35,8 +35,8 @@ public class LinkActivity extends AndroidApplication {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mDeliver = (DataService.MessageBinder) service;
-            mDeliver.setGameDataListener(game);
-            game.setSender(new BaseGame.ISender() {
+            mDeliver.addObserver(game);
+            game.setSender(new ISender() {
                 @Override
                 public void send(byte[] data) {
                     mDeliver.send(data);
@@ -47,7 +47,7 @@ public class LinkActivity extends AndroidApplication {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             if (mDeliver != null) {
-                mDeliver.setGameDataListener(null);
+                mDeliver.removeObserver(game);
             }
         }
     };

@@ -18,7 +18,7 @@ import cn.muxiaozi.circle.utils.LogUtil;
  * <p/>
  * UDP服务端
  */
-public class UDPServer implements Runnable, ISocket {
+class UDPServer implements Runnable, ISocket {
 
     /**
      * Service回调
@@ -84,7 +84,7 @@ public class UDPServer implements Runnable, ISocket {
         private byte[] tmpData;
         private DatagramPacket tmpPacket;
 
-        public DataHandle(DatagramSocket socket) {
+        DataHandle(DatagramSocket socket) {
             mSocket = socket;
 
             mClients = new ArrayList<>(Constants.MAX_CLIENT_NUM);
@@ -134,22 +134,21 @@ public class UDPServer implements Runnable, ISocket {
                             }
                         }
                     } else {
-                        if (tmpData[0] < 0) {
-                            if (tmpData[0] == DataFactory.TYPE_FRIEND_IN) {
-                                mListener.getOnlineUserInfo(new DataService.IGetUserInfo() {
-                                    @Override
-                                    public void onGet(UserBean bean) {
-                                        sendToOne(DataFactory.packFriendIn(bean), tmpPacket.getAddress());
-                                    }
-                                });
+                        if (tmpData[0] == DataFactory.TYPE_FRIEND_IN) {
+                            mListener.getOnlineUserInfo(new DataService.IGetUserInfo() {
+                                @Override
+                                public void onGet(UserBean bean) {
+                                    sendToOne(DataFactory.packFriendIn(bean), tmpPacket.getAddress());
+                                }
+                            });
 
-                                mClients.add(new ClientEntity(
-                                        DataFactory.unpackFriendIn(tmpData).getImei(),
-                                        tmpPacket.getAddress()));
-                            }
+                            mClients.add(new ClientEntity(
+                                    DataFactory.unpackFriendIn(tmpData).getImei(),
+                                    tmpPacket.getAddress()));
                         }
 
-                        if (!mListener.receive(tmpData)) {
+                        //如果是偶数，则转发
+                        if ((tmpData[0] & 1) == 0) {
                             sendExceptOne(tmpData, tmpPacket.getAddress());
                         }
                     }
@@ -203,7 +202,7 @@ public class UDPServer implements Runnable, ISocket {
             String imei;
             int noReplyCount;
 
-            public ClientEntity(String imei, InetAddress address) {
+            ClientEntity(String imei, InetAddress address) {
                 this.imei = imei;
                 this.address = address;
                 this.noReplyCount = 0;

@@ -39,7 +39,7 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mDeliver = (DataService.MessageBinder) service;
-            mDeliver.setRoomDataListener(RoomPresenter.this);
+            mDeliver.addObserver(RoomPresenter.this);
 
             ArrayList<UserBean> playList = mView.getPlayerList();
             mDeliver.fillPlayerList(playList);
@@ -60,13 +60,13 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             if (mDeliver != null) {
-                mDeliver.setRoomDataListener(null);
+                mDeliver.removeObserver(RoomPresenter.this);
             }
         }
     };
 
     @Override
-    public boolean receive(byte[] data) {
+    public void receive(byte[] data) {
         switch (data[0]) {
             case DataFactory.TYPE_PREPARE:
                 DataFactory.PrepareEntity playerEntity = DataFactory.unpackPrepareState(data);
@@ -109,7 +109,6 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
                 });
                 break;
         }
-        return false;
     }
 
     /**

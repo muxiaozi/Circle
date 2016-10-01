@@ -17,7 +17,7 @@ import cn.muxiaozi.circle.utils.LogUtil;
  * <p>
  * UDP客户端
  */
-public class UDPClient implements Runnable, ISocket {
+class UDPClient implements Runnable, ISocket {
 
     private DatagramSocket mSocket;
     private DatagramPacket mReceiverPacket;

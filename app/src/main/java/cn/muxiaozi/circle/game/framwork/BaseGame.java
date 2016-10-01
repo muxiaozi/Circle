@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
 
 import cn.muxiaozi.circle.net.IReceiver;
+import cn.muxiaozi.circle.net.ISender;
 
 /**
  * Created by 慕宵子 on 2016/7/31 0031.
@@ -21,10 +22,6 @@ public abstract class BaseGame extends Game implements IReceiver {
         return mPlayers;
     }
 
-    public interface ISender {
-        void send(byte[] data);
-    }
-
     /**
      * 设置消息发送者，使用之来发送游戏数据
      *
@@ -40,10 +37,11 @@ public abstract class BaseGame extends Game implements IReceiver {
      * @param data 数据
      */
     @Override
-    public boolean receive(byte[] data) {
+    public void receive(byte[] data) {
         final Screen screen = getScreen();
-        return !(screen != null && screen instanceof BaseScreen)
-                || ((BaseScreen) screen).receive(data);
+        if(screen != null){
+            ((BaseScreen)screen).receive(data);
+        }
     }
 
     /**

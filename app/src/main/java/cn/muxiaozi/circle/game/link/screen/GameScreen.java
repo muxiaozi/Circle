@@ -47,7 +47,7 @@ public class GameScreen extends BaseScreen<MainGame> {
     }
 
     @Override
-    public boolean receive(byte[] data) {
-        return gameStage.receive(data);
+    public void receive(byte[] data) {
+        gameStage.receive(data);
     }
 }

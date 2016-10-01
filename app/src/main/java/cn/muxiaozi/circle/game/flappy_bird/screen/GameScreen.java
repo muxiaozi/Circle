@@ -1,7 +1,6 @@
 package cn.muxiaozi.circle.game.flappy_bird.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
 import cn.muxiaozi.circle.game.flappy_bird.MainGame;
@@ -12,7 +11,7 @@ import cn.muxiaozi.circle.game.framwork.BaseScreen;
 /**
  * 主游戏场景
  *
- * @xietansheng
+ * @xietansheng 作者
  */
 public class GameScreen extends BaseScreen<MainGame> {
 
@@ -106,14 +105,12 @@ public class GameScreen extends BaseScreen<MainGame> {
     }
 
     @Override
-    public boolean receive(byte[] data) {
-        boolean flag;
+    public void receive(byte[] data) {
         if (gameOverStage.isVisible()) {
-            flag = gameOverStage.receive(data);
+            gameOverStage.receive(data);
         } else {
-            flag = gameStage.receive(data);
+            gameStage.receive(data);
         }
-        return flag;
     }
 }
 

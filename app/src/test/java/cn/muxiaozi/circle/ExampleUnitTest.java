@@ -12,15 +12,10 @@ import static org.junit.Assert.*;
  */
 public class ExampleUnitTest {
     @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
-    }
-
-    @Test
-    public void testSize(){
-        byte[] data = DataFactory.packStartGame(new String[]{"123123123123","123123123123","123123123123","123123123123",
-                "123123123123","123123123123","123123123123","123123123123"});
-        System.out.print(data.length);
-
+    public void testSize() {
+        byte data[] = new byte[]{-3, -2, -1, 0, 1, 2, 3};
+        for (byte aData : data) {
+            System.out.println(aData + ":" + (aData & 1));
+        }
     }
 }
