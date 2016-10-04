@@ -31,7 +31,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ViewHolder
         void onClick(UserBean player);
     }
 
-    public PlayerAdapter(Context context, ArrayList<UserBean> mData) {
+    PlayerAdapter(Context context, ArrayList<UserBean> mData) {
         mInflater = LayoutInflater.from(context);
         mAssetManager = context.getAssets();
         this.mData = mData;

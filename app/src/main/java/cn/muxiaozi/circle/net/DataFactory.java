@@ -133,7 +133,8 @@ public abstract class DataFactory {
         try {
             dis.readByte();
             return dis.readUTF();
-        } catch (IOException ignored) {
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return null;
     }

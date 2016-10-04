@@ -5,30 +5,30 @@ package cn.muxiaozi.circle.game;
  * <p>
  * 游戏的ID都记录在此
  */
-public class GameID {
+public interface GameID {
     /**
      * 无效游戏ID
      */
-    public static final int NULL = 0;
+    int NULL = 0;
 
     /**
      * 找我
      */
-    public static final int FIND_ME = 1;
+    int FIND_ME = 1;
 
     /**
      * 你画我猜
      */
-    public static final int DOODLE = 2;
+    int DOODLE = 2;
 
     /**
      * FlappyBird
      */
-    public static final int FLAPPY_BIRD = 3;
+    int FLAPPY_BIRD = 3;
 
     /**
      * 连连看
      */
-    public static final int LINK = 4;
+    int LINK = 4;
 
 }

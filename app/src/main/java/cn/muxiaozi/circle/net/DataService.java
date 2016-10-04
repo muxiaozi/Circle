@@ -53,7 +53,9 @@ public class DataService extends Service implements IDataService {
         super.onCreate();
         observers = new ArrayList<>(3);
         dataQueue = new ArrayBlockingQueue<>(8);
-        new Thread(runDataQueue).start();
+        Thread t = new Thread(runDataQueue);
+        t.setPriority(Thread.MAX_PRIORITY);
+        t.start();
 
         mOnlineFriends.clear();
         mOnlineFriends.put(InfoUtil.getImei(this), InfoUtil.getMyInfo(this));

@@ -3,16 +3,16 @@ package cn.muxiaozi.circle.game;
 /**
  * Created by 慕宵子 on 2016/7/11.
  */
-public class GameListBean {
+class GameListBean {
 
     private int gameID;
     private String title;
     private String detail;
 
-    public GameListBean() {
+    GameListBean() {
     }
 
-    public GameListBean(int gameID, String title, String detail) {
+    GameListBean(int gameID, String title, String detail) {
         this.gameID = gameID;
         this.title = title;
         this.detail = detail;

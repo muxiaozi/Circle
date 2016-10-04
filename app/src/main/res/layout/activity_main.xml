@@ -26,6 +26,7 @@
             android:id="@+id/fab_menu"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            app:item_padding="@dimen/floating_menu_item_padding"
             android:background="#0000">
 
             <android.support.design.widget.FloatingActionButton

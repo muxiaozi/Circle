@@ -112,7 +112,6 @@ public abstract class DataFactory {
         return 0;
     }
 
-
     /**
      * 同步地图
      */

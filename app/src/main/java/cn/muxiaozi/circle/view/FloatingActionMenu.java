@@ -3,6 +3,7 @@ package cn.muxiaozi.circle.view;
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
@@ -20,6 +21,8 @@ import cn.muxiaozi.circle.R;
  * 自定义悬浮菜单
  */
 public class FloatingActionMenu extends ViewGroup implements View.OnClickListener {
+
+    private float itemPadding;
 
     public static final int STATE_EXPAND = 0;       //打开状态
     public static final int STATE_COLLAPSE = 1;     //关闭状态
@@ -61,6 +64,10 @@ public class FloatingActionMenu extends ViewGroup implements View.OnClickListene
 
     public FloatingActionMenu(Context context, AttributeSet attrs) {
         super(context, attrs);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FloatingActionMenu);
+        itemPadding = a.getDimension(R.styleable.FloatingActionMenu_item_padding,
+                TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, getResources().getDisplayMetrics()));
+        a.recycle();
     }
 
     @Override
@@ -221,16 +228,14 @@ public class FloatingActionMenu extends ViewGroup implements View.OnClickListene
 
                     case 1:
                         childView.setVisibility(INVISIBLE);
-                        l = (int) (getChildAt(0).getLeft() - childWidth - TypedValue.applyDimension(
-                                TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics()));
+                        l = (int) (getChildAt(0).getLeft() - childWidth - itemPadding);
                         t = getChildAt(0).getTop();
                         break;
 
                     case 2:
                         childView.setVisibility(INVISIBLE);
                         l = getChildAt(0).getLeft();
-                        t = (int) (getChildAt(0).getTop() - childHeight - TypedValue.applyDimension(
-                                TypedValue.COMPLEX_UNIT_DIP, 16, getResources().getDisplayMetrics()));
+                        t = (int) (getChildAt(0).getTop() - childHeight - itemPadding);
                         break;
                 }
 

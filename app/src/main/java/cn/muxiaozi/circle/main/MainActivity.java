@@ -31,7 +31,6 @@ import cn.muxiaozi.circle.main.version.VersionInfo;
 import cn.muxiaozi.circle.main.version.VersionPresenter;
 import cn.muxiaozi.circle.navigation.AboutActivity;
 import cn.muxiaozi.circle.navigation.FeedBackActivity;
-import cn.muxiaozi.circle.navigation.HelpActivity;
 import cn.muxiaozi.circle.navigation.NavigationAdapter;
 import cn.muxiaozi.circle.navigation.SetInfoActivity;
 import cn.muxiaozi.circle.navigation.SettingActivity;
@@ -161,9 +160,6 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
                                 break;
                             case "设置":
                                 startActivity(new Intent(MainActivity.this, SettingActivity.class));
-                                break;
-                            case "帮助":
-                                startActivity(new Intent(MainActivity.this, HelpActivity.class));
                                 break;
                             case "版本更新":
                                 mMainLayout.closeDrawer(GravityCompat.START);

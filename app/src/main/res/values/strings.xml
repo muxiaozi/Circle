@@ -2,4 +2,7 @@
     <string name="app_name">我的圈圈</string>
     <string name="close">关闭</string>
     <string name="open">打开</string>
+    <string name="copyright">Copyright © 我的圈圈. All Rights Reserved.</string>
+    <string name="software_introduce">\t\t我的圈圈是一款非常有意思的软件，它最主要的功能可以让您与身边的朋友甚至陌生人之间快速展开一张轻松的游戏对战，以增进朋友之间的友谊或者结识更多朋友。</string>
+    <string name="how_to_use">\t\t软件主页右下角有一个绿色的“+”按钮，点击它可以创建或加入圈圈，只需要一个小伙伴创建，其它小伙伴便可选择加入搜索到的圈圈，由于手机硬件限制，最多可以加入8个小伙伴。\n\n\t\t接下来创建圈圈的小伙伴可以选择游戏，其它小伙伴只需要加入房间并且准备就绪，接下来就可以与朋友一起享受一场绝妙的游戏盛宴啦！</string>
 </resources>

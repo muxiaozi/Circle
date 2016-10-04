@@ -17,6 +17,7 @@ import cn.muxiaozi.circle.base.Constants;
 import cn.muxiaozi.circle.game.GameID;
 import cn.muxiaozi.circle.game.flappy_bird.FlappyBirdActivity;
 import cn.muxiaozi.circle.game.link.LinkActivity;
+import cn.muxiaozi.circle.game.speedTest;
 import cn.muxiaozi.circle.net.DataFactory;
 import cn.muxiaozi.circle.net.DataService;
 import cn.muxiaozi.circle.utils.ToastUtil;
@@ -160,11 +161,14 @@ public class RoomActivity extends AppCompatActivity implements RoomContract.View
             case GameID.FIND_ME:
                 intent = null;
                 break;
-            case GameID.LINK:
-                intent = new Intent(this, LinkActivity.class);
+            case GameID.DOODLE:
+                intent = new Intent(this, speedTest.class);
                 break;
             case GameID.FLAPPY_BIRD:
                 intent = new Intent(this, FlappyBirdActivity.class);
+                break;
+            case GameID.LINK:
+                intent = new Intent(this, LinkActivity.class);
                 break;
             default:
                 intent = null;

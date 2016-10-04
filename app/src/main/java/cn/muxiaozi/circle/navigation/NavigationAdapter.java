@@ -31,10 +31,9 @@ public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.Vi
         this.mInflater = LayoutInflater.from(context);
         String version = InfoUtil.getVersion(context);
 
-        mData = new ArrayList<>(6);
+        mData = new ArrayList<>(5);
         mData.add(new NavItemBean(R.mipmap.nav_info, "个人资料", null, NavItemBean.TYPE_NORMAL));
         mData.add(new NavItemBean(R.mipmap.nav_setting, "设置", null, NavItemBean.TYPE_NORMAL));
-        mData.add(new NavItemBean(R.mipmap.nav_help, "帮助", null, NavItemBean.TYPE_NORMAL));
         mData.add(new NavItemBean(R.mipmap.nav_upgrade, "版本更新", "V " + version, NavItemBean.TYPE_NORMAL));
         mData.add(new NavItemBean(R.mipmap.nav_feedback, "意见反馈", null, NavItemBean.TYPE_NORMAL));
         mData.add(new NavItemBean(R.mipmap.nav_about, "关于圈圈", null, NavItemBean.TYPE_NORMAL));
@@ -50,7 +49,6 @@ public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.Vi
         ViewHolder holder;
         switch (viewType) {
             case NavItemBean.TYPE_NORMAL:
-            case NavItemBean.TYPE_NO_ICON:
                 View item = mInflater.inflate(R.layout.listitem_navigation, parent, false);
                 holder = new ViewHolder(item);
                 break;
@@ -70,10 +68,6 @@ public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.Vi
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final NavItemBean data = mData.get(position);
         switch (data.getType()) {
-            case NavItemBean.TYPE_NO_ICON:
-                holder.title.setText(data.getTitle());
-                break;
-
             case NavItemBean.TYPE_NORMAL:
                 holder.title.setText(data.getTitle());
                 if (data.getSubHead() != null) {

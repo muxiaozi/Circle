@@ -23,9 +23,7 @@ import cn.muxiaozi.circle.view.RecycleViewDivider;
 /**
  * Created by 慕宵子 on 2016/6/21.
  */
-public class GameFragment extends Fragment implements GameContract.View {
-
-    GameContract.Presenter mGamePresenter;
+public class GameFragment extends Fragment {
 
     @Nullable
     @Override
@@ -36,7 +34,6 @@ public class GameFragment extends Fragment implements GameContract.View {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mGamePresenter = new GamePresenter(getContext(), this);
 
         initView();
     }
@@ -63,7 +60,7 @@ public class GameFragment extends Fragment implements GameContract.View {
         //添加轮播视图
         CarouselLayout carouselLayout = (CarouselLayout) LayoutInflater.from(getContext()).inflate(
                 R.layout.view_carousel, gameList, false);
-        carouselLayout.setPage(new int[]{GameID.FLAPPY_BIRD});
+        carouselLayout.setPage(new int[]{GameID.FLAPPY_BIRD, GameID.LINK});
         carouselLayout.setOnPageClickListener(new CarouselLayout.onPageClickListener() {
             @Override
             public void onClick(int gameID) {
@@ -80,13 +77,7 @@ public class GameFragment extends Fragment implements GameContract.View {
     }
 
     @Override
-    public void showTips(String msg) {
-        ToastUtil.showShort(getContext(), msg);
-    }
-
-    @Override
     public void onDestroy() {
-        mGamePresenter.onDestroy();
         super.onDestroy();
     }
 }

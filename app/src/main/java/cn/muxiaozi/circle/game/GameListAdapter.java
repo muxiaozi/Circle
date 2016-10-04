@@ -18,9 +18,9 @@ import cn.muxiaozi.circle.utils.ImageUtil;
 /**
  * Created by 慕宵子 on 2016/7/11.
  */
-public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.ViewHolder> {
-    public static final int TYPE_HEADER = 0;
-    public static final int TYPE_NORMAL = 1;
+class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.ViewHolder> {
+    private static final int TYPE_HEADER = 0;
+    private static final int TYPE_NORMAL = 1;
 
     private ArrayList<GameListBean> mDatas;
     private LayoutInflater mInflater;
@@ -33,13 +33,13 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.ViewHo
         void onClick(int gameID);
     }
 
-    public GameListAdapter(Context context, ArrayList<GameListBean> datas) {
+    GameListAdapter(Context context, ArrayList<GameListBean> datas) {
         mInflater = LayoutInflater.from(context);
         mDatas = datas;
         mAssetManager = context.getAssets();
     }
 
-    public void setHeaderView(View headerView) {
+    void setHeaderView(View headerView) {
         mHeaderView = headerView;
         notifyItemInserted(0);
         notifyDataSetChanged();
@@ -83,7 +83,7 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.ViewHo
         });
     }
 
-    public int getRealPosition(RecyclerView.ViewHolder holder) {
+    private int getRealPosition(RecyclerView.ViewHolder holder) {
         int position = holder.getLayoutPosition();
         return mHeaderView == null ? position : position - 1;
     }
@@ -93,7 +93,7 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.ViewHo
         return mHeaderView == null ? mDatas.size() : mDatas.size() + 1;
     }
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
+    void setOnItemClickListener(OnItemClickListener listener) {
         this.mOnItemClickListener = listener;
     }
 
@@ -102,7 +102,7 @@ public class GameListAdapter extends RecyclerView.Adapter<GameListAdapter.ViewHo
         TextView title;
         TextView detail;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             if (itemView == mHeaderView) return;
 

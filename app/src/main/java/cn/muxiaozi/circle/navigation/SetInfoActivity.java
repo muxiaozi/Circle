@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -61,10 +62,11 @@ public class SetInfoActivity extends AppCompatActivity {
                 SharedPreferences preferences = getSharedPreferences(Constants.CIRCLE_CONFIG, MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putInt(InfoUtil.HEAD_IMAGE, myInfo.getHeadImage());
-                if (!mName.getText().toString().isEmpty()) {
+
+                if (!TextUtils.isEmpty(mName.getText())) {
                     editor.putString(InfoUtil.NAME, mName.getText().toString());
                 }
-                if (!mAutograph.getText().toString().isEmpty()) {
+                if (!TextUtils.isEmpty(mAutograph.getText())) {
                     editor.putString(InfoUtil.AUTOGRAPH, mAutograph.getText().toString());
                 }
                 editor.apply();
@@ -80,9 +82,9 @@ public class SetInfoActivity extends AppCompatActivity {
             mHeadImg.setImageBitmap(bitmap);
         }
         mName = (EditText) findViewById(R.id.edit_name);
-        mName.setHint(myInfo.getName());
+        mName.setText(myInfo.getName());
         mAutograph = (EditText) findViewById(R.id.edit_autograph);
-        mAutograph.setHint(myInfo.getAutograph());
+        mAutograph.setText(myInfo.getAutograph());
     }
 
     private void initToolBar() {

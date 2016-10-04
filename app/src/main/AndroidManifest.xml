@@ -25,8 +25,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".net.DataService" />
-
         <activity android:name=".main.MainActivity" />
 
         <activity android:name=".room.RoomActivity" />
@@ -36,15 +34,19 @@
             android:name=".game.flappy_bird.FlappyBirdActivity"
             android:theme="@style/AppTheme.FullScreen" />
 
-        <activity android:name=".game.link.LinkActivity"
+        <activity
+            android:name=".game.link.LinkActivity"
             android:theme="@style/AppTheme.FullScreen" />
+
+        <activity android:name=".game.speedTest" />
 
         <activity android:name=".navigation.SetInfoActivity" />
         <activity android:name=".navigation.SettingActivity" />
         <activity android:name=".navigation.AboutActivity" />
         <activity android:name=".navigation.FeedBackActivity" />
-        <activity android:name=".navigation.HelpActivity" />
         <activity android:name=".navigation.SelectHeadImg" />
+
+        <service android:name=".net.DataService" />
     </application>
 
 </manifest>

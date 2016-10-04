@@ -3,10 +3,9 @@ package cn.muxiaozi.circle.navigation;
 /**
  * Created by 慕宵子 on 2016/7/28.
  */
-public class NavItemBean {
-    public static final int TYPE_NORMAL = 0;
-    public static final int TYPE_NO_ICON = 1;
-    public static final int TYPE_SEPARATOR = 2;
+class NavItemBean {
+    static final int TYPE_NORMAL = 0;
+    static final int TYPE_SEPARATOR = 1;
 
     private int icon;
     private String title;
@@ -17,7 +16,7 @@ public class NavItemBean {
         this.type = type;
     }
 
-    public NavItemBean(int icon, String title, String subHead, int type) {
+    NavItemBean(int icon, String title, String subHead, int type) {
         this.icon = icon;
         this.title = title;
         this.subHead = subHead;
