@@ -41,7 +41,7 @@ public class ReadyActor extends BaseActor {
         super.act(delta);
         startTime -= delta;
 
-        if (value != (int) startTime + 1 && value != 0) {
+        if (value != (int) startTime + 1) {
             value = (int) (startTime) + 1;
             setRegion(value != 0 ? atlas.findRegion(Res.Atlas.GRADE, value) : null);
             if (mListener != null) {
@@ -53,7 +53,11 @@ public class ReadyActor extends BaseActor {
     public void setValue(int value) {
         //设置startTime为0是为了不让其干扰value的状态
         startTime = 0;
-        setRegion(value != 0 ? atlas.findRegion(Res.Atlas.GRADE, value) : null);
+        if (value > 0 || value <= 9) {
+            setRegion(atlas.findRegion(Res.Atlas.GRADE, value + 1));
+        } else {
+            setRegion(null);
+        }
     }
 
     public void start() {

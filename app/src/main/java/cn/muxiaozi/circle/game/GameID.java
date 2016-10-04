@@ -30,5 +30,4 @@ public interface GameID {
      * 连连看
      */
     int LINK = 4;
-
 }

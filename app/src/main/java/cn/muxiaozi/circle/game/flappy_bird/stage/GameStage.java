@@ -274,7 +274,7 @@ public class GameStage extends BaseStage<MainGame> {
         // 将水管加入到集合, 方便进行碰撞检测
         barActorList.add(downBarActor);
         // 将水管设置到小鸟后面(必须在 actor 添加到 stage 后设置 ZIndex 才有效)
-        downBarActor.setZIndex(getActors().size - 1);
+        downBarActor.setZIndex(floorActor.getZIndex());
 
         // 创建上方水管
         BarActor upBarActor = barActorPool.obtain();
@@ -286,7 +286,7 @@ public class GameStage extends BaseStage<MainGame> {
         upBarActor.setMove(true);
         addActor(upBarActor);
         barActorList.add(upBarActor);
-        upBarActor.setZIndex(getActors().size - 1);
+        upBarActor.setZIndex(floorActor.getZIndex());
     }
 
     /**

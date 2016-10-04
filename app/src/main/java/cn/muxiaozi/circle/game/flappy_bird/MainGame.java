@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Disposable;
 
 import cn.muxiaozi.circle.base.Constants;
-import cn.muxiaozi.circle.game.flappy_bird.screen.LoadScreen;
 import cn.muxiaozi.circle.game.flappy_bird.screen.GameScreen;
 import cn.muxiaozi.circle.game.framwork.BaseGame;
 import cn.muxiaozi.circle.net.DataFactory;
@@ -49,11 +48,6 @@ public class MainGame extends BaseGame {
      * 纹理图集
      */
     private TextureAtlas atlas;
-
-    /**
-     * 加载游戏场景
-     */
-    private LoadScreen loadScreen;
 
     /**
      * 主游戏场景
@@ -103,13 +97,9 @@ public class MainGame extends BaseGame {
         // 获取资源
         atlas = assetManager.get(Res.Atlas.ATLAS_PATH, TextureAtlas.class);
 
-        // 创建加载游戏场景
-        loadScreen = new LoadScreen(this);
-        if (getPlayers() != null)
-            loadScreen.setPlayerList(getPlayers());
-
         // 设置当前场景
-        setScreen(loadScreen);
+        gameScreen = new GameScreen(this, getPlayers());
+        setScreen(gameScreen);
 
         // 判断是否需要显示帧率, 如果需要, 则进行初始化
         showFps = Gdx.app.getPreferences(Constants.CIRCLE_CONFIG)
@@ -122,16 +112,6 @@ public class MainGame extends BaseGame {
 
     public SoundsManager getSoundsManager() {
         return soundsManager;
-    }
-
-    /**
-     * 开始游戏
-     *
-     * @param players
-     */
-    public void startGame(String[] players) {
-        gameScreen = new GameScreen(this, players);
-        setScreen(gameScreen);
     }
 
     @Override
@@ -188,7 +168,7 @@ public class MainGame extends BaseGame {
     /**
      * 用于调试显示帧率
      */
-     private class FPSDebug implements Disposable {
+    private class FPSDebug implements Disposable {
 
         private SpriteBatch batch;
 

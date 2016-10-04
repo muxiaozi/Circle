@@ -77,7 +77,6 @@ public class GameStage extends BaseStage<MainGame> {
     public GameStage(final MainGame game, Viewport viewport, int index) {
         super(game, viewport);
 
-        LogUtil.d("player:" + game.getPlayers().length);
         for (String player : game.getPlayers()) {
             LogUtil.d(player);
         }
@@ -135,7 +134,7 @@ public class GameStage extends BaseStage<MainGame> {
             map[0][y] = map[Res.COL_NUM - 1][y] = -1;
         }
 
-        playerActor = new PlayerActor(new Pixmap((int)getWidth(), 40, Pixmap.Format.RGB888),
+        playerActor = new PlayerActor(new Pixmap((int) getWidth(), 40, Pixmap.Format.RGB888),
                 game.getPlayers().length, myIndex);
         addActor(playerActor);
 
@@ -482,7 +481,9 @@ public class GameStage extends BaseStage<MainGame> {
                     setDiamondType(focusPoint2.x, focusPoint2.y, (byte) -1);
                     focusPoint1.set(-1, -1);
 
-                    pairSound.play();
+                    if (getGame().hasSounds()) {
+                        pairSound.play();
+                    }
                     linkActor.link(linkPath);
 
                     //没人被卡住
@@ -498,8 +499,6 @@ public class GameStage extends BaseStage<MainGame> {
                         while (!showTips(false)) {
                             upsetMap();
                         }
-
-                        requestTakeTurn();
                     }
                 } else {
                     diamonds[focusPoint1.x][focusPoint1.y].setFocus(false);
@@ -517,9 +516,11 @@ public class GameStage extends BaseStage<MainGame> {
     private void clearFocusPoint() {
         if (!focusPoint1.equals(-1, -1)) {
             diamonds[focusPoint1.x][focusPoint1.y].setFocus(false);
+            focusPoint1.set(-1, -1);
         }
         if (!focusPoint2.equals(-1, -1)) {
             diamonds[focusPoint2.x][focusPoint2.y].setFocus(false);
+            focusPoint2.set(-1, -1);
         }
     }
 
@@ -539,39 +540,34 @@ public class GameStage extends BaseStage<MainGame> {
 
     @Override
     public void receive(final byte[] data) {
-        Gdx.app.postRunnable(new Runnable() {
-            @Override
-            public void run() {
-                switch (data[0]) {
-                    case DataFactory.TYPE_TOUCH:
-                        DataFactory.TouchEntity entity = DataFactory.unpackTouch(data);
-                        if (entity != null) {
-                            touchDiamond(entity.x, entity.y);
-                        }
-                        break;
-
-                    case DataFactory.TYPE_TURN:
-                        takeTurn(DataFactory.unpackTurn(data));
-                        break;
-
-                    case DataFactory.TYPE_READY:
-                        readyActor.setValue(DataFactory.unpackReady(data));
-                        break;
-
-                    case DataFactory.TYPE_SYNC_MAP:
-                        byte[][] map = DataFactory.unpackSyncMap(data);
-                        if (map != null) {
-                            GameStage.this.map = map;
-                            for (int i = 1; i < Res.COL_NUM - 1; i++) {
-                                for (int j = 1; j < Res.ROW_NUM - 1; j++) {
-                                    diamonds[i][j].setType(map[i][j]);
-                                }
-                            }
-                            clearFocusPoint();
-                        }
-                        break;
+        switch (data[0]) {
+            case DataFactory.TYPE_TOUCH:
+                DataFactory.TouchEntity entity = DataFactory.unpackTouch(data);
+                if (entity != null) {
+                    touchDiamond(entity.x, entity.y);
                 }
-            }
-        });
+                break;
+
+            case DataFactory.TYPE_TURN:
+                takeTurn(DataFactory.unpackTurn(data));
+                break;
+
+            case DataFactory.TYPE_READY:
+                readyActor.setValue(DataFactory.unpackReady(data));
+                break;
+
+            case DataFactory.TYPE_SYNC_MAP:
+                byte[][] map = DataFactory.unpackSyncMap(data);
+                if (map != null) {
+                    GameStage.this.map = map;
+                    for (int i = 1; i < Res.COL_NUM - 1; i++) {
+                        for (int j = 1; j < Res.ROW_NUM - 1; j++) {
+                            diamonds[i][j].setType(map[i][j]);
+                        }
+                    }
+                    clearFocusPoint();
+                }
+                break;
+        }
     }
 }

@@ -10,12 +10,6 @@ import java.io.IOException;
  * Created by 慕宵子 on 2016/8/8 0008.
  */
 public abstract class DataFactory {
-
-    /**
-     * 开始游戏
-     */
-    public static final byte TYPE_START_GAME = 1;
-
     /**
      * 游戏结束
      */
@@ -51,71 +45,6 @@ public abstract class DataFactory {
      */
     public static final byte TYPE_READY = 8;
 
-    /**
-     * 进入加载界面，并准备完毕
-     */
-    public static final byte TYPE_PREPARE = 10;
-
-    /**
-     * 玩家进入游戏
-     */
-    public static byte[] packPrepare(String imei) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
-        try {
-            dos.writeByte(TYPE_PREPARE);
-            dos.writeUTF(imei);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return baos.toByteArray();
-    }
-
-    public static String unpackPrepare(byte[] data) {
-        ByteArrayInputStream bais = new ByteArrayInputStream(data);
-        DataInputStream dis = new DataInputStream(bais);
-        try {
-            dis.readByte();
-            return dis.readUTF();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    /**
-     * 开始游戏
-     */
-    public static byte[] packStartGame(String[] imeis) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(baos);
-        try {
-            dos.writeByte(TYPE_START_GAME);
-            dos.writeByte(imeis.length);
-            for (String imei : imeis) {
-                dos.writeUTF(imei);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return baos.toByteArray();
-    }
-
-    public static String[] unpackStartGame(byte[] data) {
-        ByteArrayInputStream bais = new ByteArrayInputStream(data);
-        DataInputStream dis = new DataInputStream(bais);
-        String[] imeis = null;
-        try {
-            dis.readByte();
-            imeis = new String[dis.readByte()];
-            for (int i = 0; i < imeis.length; i++) {
-                imeis[i] = dis.readUTF();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return imeis;
-    }
 
     /**
      * 游戏结束

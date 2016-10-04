@@ -31,7 +31,7 @@ public class MainGame extends BaseGame{
 
     @Override
     public void create() {
-        Gdx.app.setLogLevel(Application.LOG_INFO);
+        Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
         //根据玩家数量决定地图大小
         worldWidth = Res.FIX_WORLD_WIDTH;
@@ -81,6 +81,5 @@ public class MainGame extends BaseGame{
     public void dispose() {
         super.dispose();
         assetManager.dispose();
-        LogUtil.i("dispose");
     }
 }
