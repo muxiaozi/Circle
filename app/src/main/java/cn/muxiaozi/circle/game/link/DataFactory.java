@@ -17,7 +17,7 @@ public abstract class DataFactory {
 
     public static final byte TYPE_TURN = 3;
 
-    public static final byte TYPE_SYNC_MAP = 4;
+    public static final byte TYPE_SYNC_MAP = 5;
 
     /**
      * 开始游戏倒计时

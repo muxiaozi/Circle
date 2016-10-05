@@ -48,6 +48,7 @@ public abstract class BaseGame extends Game implements IReceiver {
 
     /**
      * 是否显示FPS
+     *
      * @return 默认不显示
      */
     public boolean isShowFPS() {
@@ -56,6 +57,7 @@ public abstract class BaseGame extends Game implements IReceiver {
 
     /**
      * 是否有背景音乐
+     *
      * @return 默认有
      */
     public boolean hasMusic() {
@@ -64,6 +66,7 @@ public abstract class BaseGame extends Game implements IReceiver {
 
     /**
      * 是否有音效
+     *
      * @return 默认有
      */
     public boolean hasSounds() {

@@ -5,7 +5,7 @@ package cn.muxiaozi.circle.game.flappy_bird;
  * 
  * @xietansheng
  */
-public enum GameState {
+public enum BirdState {
 
     /** 准备状态 */
     ready,

@@ -31,14 +31,16 @@ public class DataService extends Service implements IDataService {
     private ISocket mSocket;
 
     //维护一个在线朋友列表
-    private final HashMap<String, UserBean> mOnlineFriends =
-            new HashMap<>(Constants.MAX_CLIENT_NUM);
+    private HashMap<String, UserBean> mOnlineFriends;
 
     //消息队列
     private BlockingQueue<byte[]> dataQueue;
 
-    //如果程序不退出，就一直执行
-    private boolean isExit = false;
+    //消息轮询子线程
+    private Thread dataLoopThread;
+
+    //程序运行状态，默认运行
+    private volatile boolean isRunning = true;
 
     //观察者
     private ArrayList<IReceiver> observers;
@@ -51,13 +53,18 @@ public class DataService extends Service implements IDataService {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        //初始化观察者数组和消息队列
         observers = new ArrayList<>(3);
         dataQueue = new ArrayBlockingQueue<>(8);
-        Thread t = new Thread(runDataQueue);
-        t.setPriority(Thread.MAX_PRIORITY);
-        t.start();
 
-        mOnlineFriends.clear();
+        //初始化消息分发子线程
+        dataLoopThread = new Thread(runDataQueue);
+        dataLoopThread.setPriority(Thread.MAX_PRIORITY);
+        dataLoopThread.start();
+
+        //初始化在线朋友列表
+        mOnlineFriends = new HashMap<>(Constants.MAX_CLIENT_NUM);
         mOnlineFriends.put(InfoUtil.getImei(this), InfoUtil.getMyInfo(this));
     }
 
@@ -67,13 +74,37 @@ public class DataService extends Service implements IDataService {
     private Runnable runDataQueue = new Runnable() {
         @Override
         public void run() {
-            while (!isExit) {
-                byte[] data = dataQueue.poll();
-                if (data != null) {
+            try {
+                while (isRunning) {
+                    byte[] data = dataQueue.take();
+
+                    //Service预处理
+                    switch (data[0]) {
+                        case DataFactory.TYPE_FRIEND_IN:    //朋友加入数据
+                            onFriendIn(DataFactory.unpackFriendIn(data));
+                            break;
+                        case DataFactory.TYPE_FRIEND_OUT:   //朋友退出数据
+                            onFriendOut(DataFactory.unpackFriendOut(data));
+                            break;
+                        case DataFactory.TYPE_PREPARE:      //玩家在游戏大厅改变准备状态
+                            DataFactory.PrepareEntity entity = DataFactory.unpackPrepareState(data);
+                            UserBean player = mOnlineFriends.get(entity.imei);
+                            if (player != null) {
+                                player.setPrepare(entity.isPrepare);
+                            }
+                            break;
+                        case DataFactory.TYPE_DISCONNECT_SERVER:
+                            onDisconnectToServer();
+                            break;
+                    }
+
+                    //转播给观察者
                     for (IReceiver receiver : observers) {
                         receiver.receive(data);
                     }
                 }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     };
@@ -144,25 +175,12 @@ public class DataService extends Service implements IDataService {
 
     @Override
     public void receive(byte[] data) {
-        switch (data[0]) {
-            case DataFactory.TYPE_FRIEND_IN:    //朋友加入数据
-                onFriendIn(DataFactory.unpackFriendIn(data));
-                break;
-            case DataFactory.TYPE_FRIEND_OUT:   //朋友退出数据
-                onFriendOut(DataFactory.unpackFriendOut(data));
-                break;
-            case DataFactory.TYPE_PREPARE:      //玩家在游戏大厅改变准备状态
-                DataFactory.PrepareEntity entity = DataFactory.unpackPrepareState(data);
-                UserBean player = mOnlineFriends.get(entity.imei);
-                if (player != null) {
-                    player.setPrepare(entity.isPrepare);
-                }
-                break;
-            case DataFactory.TYPE_DISCONNECT_SERVER:
-                onDisconnectToServer();
-                break;
+        try {
+            dataQueue.put(data);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            LogUtil.e("消息缓冲区溢出！丢失消息类型：" + data[0]);
         }
-        dataQueue.offer(data);
     }
 
     public void onDisconnectToServer() {
@@ -179,10 +197,11 @@ public class DataService extends Service implements IDataService {
      * 自定义返回本地Binder对象
      */
     public class MessageBinder extends Binder {
-
         //发送消息
         public void send(byte[] data) {
-            if (mState == STATE_NONE) {
+            if (mState != STATE_NONE) {
+                mSocket.send(data);
+            } else {
                 LogUtil.w("请先加入圈圈！");
                 AsyncRun.run(new Runnable() {
                     @Override
@@ -190,8 +209,6 @@ public class DataService extends Service implements IDataService {
                         ToastUtil.showShort(DataService.this, "请先加入圈圈！");
                     }
                 });
-            } else {
-                mSocket.send(data);
             }
         }
 
@@ -222,7 +239,8 @@ public class DataService extends Service implements IDataService {
 
     @Override
     public void onDestroy() {
-        isExit = true;
+        isRunning = false;
+        dataLoopThread.interrupt();
         if (mState != STATE_NONE && mSocket != null) {
             mSocket.close();
         }

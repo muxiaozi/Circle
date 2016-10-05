@@ -42,10 +42,6 @@ public class BarActor extends BaseImageActor implements Poolable {
 			setX(getX() + moveVelocity * delta);
 		}
 	}
-	
-	public float getMoveVelocity() {
-		return moveVelocity;
-	}
 
 	public void setMoveVelocity(float moveVelocity) {
 		this.moveVelocity = moveVelocity;

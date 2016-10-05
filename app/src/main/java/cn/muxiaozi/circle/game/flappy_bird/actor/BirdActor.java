@@ -5,7 +5,7 @@ import com.badlogic.gdx.utils.Align;
 
 import cn.muxiaozi.circle.game.flappy_bird.MainGame;
 import cn.muxiaozi.circle.game.flappy_bird.actor.base.BaseAnimationActor;
-import cn.muxiaozi.circle.game.flappy_bird.GameState;
+import cn.muxiaozi.circle.game.flappy_bird.BirdState;
 import cn.muxiaozi.circle.game.flappy_bird.Res;
 
 
@@ -24,7 +24,7 @@ public class BirdActor extends BaseAnimationActor {
     /**
      * 当前游戏状态
      */
-    private GameState gameState;
+    private BirdState birdState;
 
     /**
      * 小鸟竖直方向上的速度
@@ -60,7 +60,7 @@ public class BirdActor extends BaseAnimationActor {
         setScale(1.2F);
 
         // 初始化为准备状态
-        setBirdState(GameState.ready);
+        setBirdState(BirdState.ready);
     }
 
     @Override
@@ -68,7 +68,7 @@ public class BirdActor extends BaseAnimationActor {
         super.act(delta);
 
         // 飞行或下落状态一直应用物理规律
-        if (gameState == GameState.fly || gameState ==GameState.drop) {
+        if (birdState == BirdState.fly || birdState == BirdState.drop) {
             // 递增速度
             velocityY += Res.Physics.GRAVITY * delta;
             // 递增位移
@@ -78,7 +78,7 @@ public class BirdActor extends BaseAnimationActor {
         }
 
         //如果在屏幕中就向左移动
-        if (gameState == GameState.die ||  gameState ==GameState.drop) {
+        if (birdState == BirdState.die ||  birdState == BirdState.drop) {
             if (getRightX() + getParent().getX() > -10) {
                 setX(getX() + Res.Physics.MOVE_VELOCITY * delta);
             }
@@ -96,16 +96,16 @@ public class BirdActor extends BaseAnimationActor {
     /**
      * 根据游戏状态刷新小鸟状态
      *
-     * @param gameState
+     * @param birdState
      */
-    public void setBirdState(GameState gameState) {
-        if (gameState == null || this.gameState == gameState) {
+    public void setBirdState(BirdState birdState) {
+        if (birdState == null || this.birdState == birdState) {
             return;
         }
 
-        this.gameState = gameState;
+        this.birdState = birdState;
 
-        switch (this.gameState) {
+        switch (this.birdState) {
             case ready:
                 // 准备状态循环播放动画, 帧持续时间为 0.2 秒
                 setPlayAnimation(true);
@@ -169,7 +169,7 @@ public class BirdActor extends BaseAnimationActor {
     }
 
     public boolean isDied(){
-        return gameState == GameState.die;
+        return birdState == BirdState.die;
     }
 }
 

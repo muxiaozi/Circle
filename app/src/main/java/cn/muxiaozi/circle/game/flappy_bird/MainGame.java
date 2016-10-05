@@ -10,11 +10,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Disposable;
 
-import cn.muxiaozi.circle.base.Constants;
 import cn.muxiaozi.circle.game.flappy_bird.screen.GameScreen;
 import cn.muxiaozi.circle.game.framwork.BaseGame;
 import cn.muxiaozi.circle.net.DataFactory;
-
 
 /**
  * 游戏主程序入口类
@@ -24,11 +22,6 @@ import cn.muxiaozi.circle.net.DataFactory;
 public class MainGame extends BaseGame {
 
     public static final String TAG = "FlappyBird";
-
-    /**
-     * 是否显示帧率
-     */
-    private boolean showFps;
 
     /**
      * 世界宽度
@@ -59,14 +52,13 @@ public class MainGame extends BaseGame {
      */
     private FPSDebug fpsDebug;
 
-    private SoundsManager soundsManager;
-
     public MainGame(String[] players) {
         super(players);
     }
 
     @Override
     public void create() {
+        super.create();
         // 设置 LOG 输出级别
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
@@ -91,9 +83,6 @@ public class MainGame extends BaseGame {
         // 等待资源加载完毕
         assetManager.finishLoading();
 
-        // 初始化音效管理器
-        soundsManager = new SoundsManager(assetManager);
-
         // 获取资源
         atlas = assetManager.get(Res.Atlas.ATLAS_PATH, TextureAtlas.class);
 
@@ -102,16 +91,10 @@ public class MainGame extends BaseGame {
         setScreen(gameScreen);
 
         // 判断是否需要显示帧率, 如果需要, 则进行初始化
-        showFps = Gdx.app.getPreferences(Constants.CIRCLE_CONFIG)
-                .getBoolean(Constants.ConfigOption.FPS, false);
-        if (showFps) {
+        if (isShowFPS()) {
             fpsDebug = new FPSDebug();
             fpsDebug.init(new BitmapFont(), 24);
         }
-    }
-
-    public SoundsManager getSoundsManager() {
-        return soundsManager;
     }
 
     @Override
@@ -124,7 +107,7 @@ public class MainGame extends BaseGame {
         super.render();
 
         // 判断是否需要渲染帧率
-        if (showFps) {
+        if (isShowFPS()) {
             fpsDebug.render();
         }
     }
@@ -140,7 +123,7 @@ public class MainGame extends BaseGame {
         if (assetManager != null) {
             assetManager.dispose();
         }
-        if (showFps) {
+        if (isShowFPS()) {
             fpsDebug.dispose();
         }
     }

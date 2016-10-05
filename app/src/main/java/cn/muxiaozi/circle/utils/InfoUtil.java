@@ -27,30 +27,12 @@ public class InfoUtil {
     /**
      * 获取手机识别号
      *
-     * @return 如果可以获取，则返回正确识别号，否则返回默认识别号
+     * @return 如果存在则返回正确识别号，否则返回null
      */
     public static String getImei(Context context) {
         SharedPreferences preferences = context
                 .getSharedPreferences(Constants.CIRCLE_CONFIG, Context.MODE_PRIVATE);
-        String imei = preferences.getString(IMEI, DEFAULT_IMEI);
-        if (imei.equals(DEFAULT_IMEI)) {
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_PHONE_STATE)
-                    == PackageManager.PERMISSION_GRANTED) {
-                imei = ((TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE)).getDeviceId();
-                preferences.edit()
-                        .putString(IMEI, imei)
-                        .apply();
-            } else {
-                preferences.edit()
-                        .putBoolean(Constants.ConfigOption.FIRST_RUN, true)
-                        .apply();
-                ToastUtil.showShort(context, "遇到点小麻烦，请重新打开应用！");
-                System.exit(0);
-            }
-        }
-        return imei;
-
-
+        return preferences.getString(IMEI, null);
     }
 
     /**

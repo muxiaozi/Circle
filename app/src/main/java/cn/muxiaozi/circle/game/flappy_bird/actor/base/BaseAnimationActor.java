@@ -9,7 +9,8 @@ import cn.muxiaozi.circle.game.framwork.AnimationActor;
 
 
 /**
- * 动画演员基类
+ * 动画演员基类,，多加了一个mainGame
+ * Actor内部不封装mainGame的
  *
  * @xietansheng
  */

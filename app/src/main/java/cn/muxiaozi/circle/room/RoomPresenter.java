@@ -18,7 +18,6 @@ import cn.muxiaozi.circle.utils.InfoUtil;
  * Created by 慕宵子 on 2016/7/24.
  */
 class RoomPresenter extends RoomContract.Presenter implements IReceiver {
-
     private String myImei;
     private DataService.MessageBinder mDeliver;
 
@@ -41,13 +40,15 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
             mDeliver = (DataService.MessageBinder) service;
             mDeliver.addObserver(RoomPresenter.this);
 
+            //根据在线玩家列表初始化房间
             ArrayList<UserBean> playList = mView.getPlayerList();
             mDeliver.fillPlayerList(playList);
-            updatePlayerList();
 
+            //如果是服务器，默认是准备状态
             if (DataService.isServer()) {
                 prepare();
             } else {
+                //如果是客户端，只需要设置为之前保存的状态
                 for (UserBean player : playList) {
                     if (player.getImei().equals(myImei)) {
                         mView.setPrepare(player.isPrepare());

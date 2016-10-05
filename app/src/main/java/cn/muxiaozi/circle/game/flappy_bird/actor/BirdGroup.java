@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import cn.muxiaozi.circle.base.Constants;
 import cn.muxiaozi.circle.game.flappy_bird.MainGame;
-import cn.muxiaozi.circle.game.flappy_bird.GameState;
+import cn.muxiaozi.circle.game.flappy_bird.BirdState;
 import cn.muxiaozi.circle.game.flappy_bird.Res;
 import cn.muxiaozi.circle.game.framwork.BaseGroup;
 import cn.muxiaozi.circle.utils.InfoUtil;
@@ -84,20 +84,20 @@ public class BirdGroup extends BaseGroup<MainGame> implements Disposable {
         for (int i = 0; i < size; i++) {
             birds[i].setX(i * (birds[0].getWidth() + Res.Physics.BIRD_INTERVAL));
             birds[i].setY(getGame().getWorldHeight() / 2);
-            birds[i].setBirdState(GameState.ready);
+            birds[i].setBirdState(BirdState.ready);
             birds[i].onTap();
         }
     }
 
     public void fly() {
         for (BirdActor bird : birds) {
-            bird.setBirdState(GameState.fly);
+            bird.setBirdState(BirdState.fly);
         }
     }
 
     public void gameOver() {
         for (BirdActor bird : birds) {
-            bird.setBirdState(GameState.gameOver);
+            bird.setBirdState(BirdState.gameOver);
         }
     }
 
@@ -107,7 +107,7 @@ public class BirdGroup extends BaseGroup<MainGame> implements Disposable {
      * @param imei  被设置状态的小鸟
      * @param state 状态
      */
-    public void setState(String imei, GameState state) {
+    public void setState(String imei, BirdState state) {
         for (BirdActor bird : birds) {
             if (bird.getImei().equals(imei)) {
                 bird.setBirdState(state);
@@ -142,7 +142,7 @@ public class BirdGroup extends BaseGroup<MainGame> implements Disposable {
                     //如果是自己，处理转移到舞台中去
                     return true;
                 } else {
-                    bird.setBirdState(GameState.die);
+                    bird.setBirdState(BirdState.die);
                 }
             }
         }

@@ -1,6 +1,7 @@
 package cn.muxiaozi.circle.game.flappy_bird.stage;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Pool;
@@ -10,8 +11,8 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import cn.muxiaozi.circle.game.flappy_bird.BirdState;
 import cn.muxiaozi.circle.game.flappy_bird.DataFactory;
-import cn.muxiaozi.circle.game.flappy_bird.GameState;
 import cn.muxiaozi.circle.game.flappy_bird.MainGame;
 import cn.muxiaozi.circle.game.flappy_bird.Res;
 import cn.muxiaozi.circle.game.flappy_bird.actor.BarActor;
@@ -79,7 +80,7 @@ public class GameStage extends BaseStage<MainGame> {
     /**
      * 游戏状态
      */
-    private GameState gameState;
+    private BirdState birdState;
 
     /**
      * 玩家列表
@@ -90,6 +91,28 @@ public class GameStage extends BaseStage<MainGame> {
      * 地图宽度
      */
     private float mapWidth;
+
+
+    /**
+     * 碰撞到水管的音效
+     */
+    private Sound hitSound;
+
+    /**
+     * 得分音效
+     */
+    private Sound scoreSound;
+
+    /**
+     * 点击屏幕时播放的音效
+     */
+    private Sound touchSound;
+
+    /**
+     * 撞到地板时的音效
+     */
+    private Sound dieSound;
+
 
     public GameStage(MainGame mainGame, Viewport viewport, String[] players) {
         super(mainGame, viewport);
@@ -104,6 +127,12 @@ public class GameStage extends BaseStage<MainGame> {
     }
 
     private void init() {
+        //初始化音频
+        hitSound = getGame().getAssetManager().get(Res.Audios.AUDIO_HIT, Sound.class);
+        scoreSound = getGame().getAssetManager().get(Res.Audios.AUDIO_SCORE, Sound.class);
+        touchSound = getGame().getAssetManager().get(Res.Audios.AUDIO_TOUCH, Sound.class);
+        dieSound = getGame().getAssetManager().get(Res.Audios.AUDIO_DIE, Sound.class);
+
         /*
          * 创建背景
          */
@@ -168,7 +197,7 @@ public class GameStage extends BaseStage<MainGame> {
      * 游戏状态改变方法01: 游戏准备状态
      */
     public void ready() {
-        gameState = GameState.ready;
+        birdState = BirdState.ready;
 
         // 设置小鸟初始Y轴坐标
         birdGroup.ready();
@@ -213,7 +242,7 @@ public class GameStage extends BaseStage<MainGame> {
      * 游戏状态方法02: 开始游戏
      */
     private void startGame() {
-        gameState = GameState.fly;
+        birdState = BirdState.fly;
 
         // 刷新小鸟显示帧和旋转角度
         birdGroup.fly();
@@ -238,7 +267,7 @@ public class GameStage extends BaseStage<MainGame> {
      * 游戏结束，所有人游戏结束
      */
     private void gameOver(int[] grades) {
-        gameState = GameState.gameOver;
+        birdState = BirdState.gameOver;
 
         // 刷新小鸟显示帧和旋转角度
         birdGroup.gameOver();
@@ -294,15 +323,17 @@ public class GameStage extends BaseStage<MainGame> {
      */
     private void checkLogic() {
         // 正在飞翔状态时才判断是否碰撞到水管或通过水管
-        if (gameState == GameState.fly) {
+        if (birdState == BirdState.fly) {
             for (BarActor barActor : barActorList) {
                 if (CollisionUtils.isCollision(birdGroup.getMyRect(), barActor,
                         Res.Physics.DEPTH)) {
                     Gdx.app.log(MainGame.TAG, "Collision Bar.");
 
-                    getGame().getSoundsManager().hit();
-                    gameState = GameState.die;
-                    birdGroup.getMyBird().setBirdState(GameState.drop);
+                    if (getGame().hasSounds()) {
+                        hitSound.play();
+                    }
+                    birdState = BirdState.die;
+                    birdGroup.getMyBird().setBirdState(BirdState.drop);
                     getGame().send(DataFactory.packDie(birdGroup.getMyImei()));
                     break;
                 }
@@ -314,7 +345,9 @@ public class GameStage extends BaseStage<MainGame> {
                     bigScoreActor.setCenterX(getCamera().position.x);
 
                     birdGroup.getMyBird().addGrade(1);
-                    getGame().getSoundsManager().score();
+                    if (getGame().hasSounds()) {
+                        scoreSound.play();
+                    }
                     barActor.setPassByBird(true);
 
                     getGame().send(DataFactory.packOverBar(birdGroup.getMyImei()));
@@ -342,9 +375,11 @@ public class GameStage extends BaseStage<MainGame> {
         if (birdGroup.collision(floorActor.getTopY())) {
             if (!birdGroup.getMyBird().isDied()) {
                 Gdx.app.log(MainGame.TAG, "Collision Floor.");
-                getGame().getSoundsManager().die();
-                gameState = GameState.die;
-                birdGroup.getMyBird().setBirdState(GameState.die);
+                if (getGame().hasSounds()) {
+                    dieSound.play();
+                }
+                birdState = BirdState.die;
+                birdGroup.getMyBird().setBirdState(BirdState.die);
             }
 
             if (birdGroup.isAllBirdDied() && DataService.isServer()) {
@@ -359,12 +394,12 @@ public class GameStage extends BaseStage<MainGame> {
         super.act(delta);
 
         // 小鸟处于飞翔状态(没有碰撞到水管和地板) 或 死亡状态(已撞到水管但还未掉落到地面)时进行逻辑检测
-        if (gameState == GameState.fly || gameState == GameState.die) {
+        if (birdState == BirdState.fly || birdState == BirdState.die) {
             // 逻辑检测(碰撞检测, 得分检测, 移除已移动出屏幕的水管)
             checkLogic();
         }
 
-        if (gameState == GameState.die) {
+        if (birdState == BirdState.die) {
             audienceTimeCounter += delta;
 
             if (audienceTimeCounter >= Res.Physics.AUDIENCE_TIME_INTERVAL) {
@@ -376,7 +411,7 @@ public class GameStage extends BaseStage<MainGame> {
         // 正在飞翔状态或者死亡状态执行生成水管的逻辑
         // 死亡并不代表游戏结束，有可能其他玩家还在飞翔
         if (DataService.isServer()) {
-            if (gameState == GameState.fly || gameState == GameState.die) {
+            if (birdState == BirdState.fly || birdState == BirdState.die) {
                 // 累计下一次水管生成时间
                 generateBarTimeCounter += delta;
 
@@ -402,12 +437,14 @@ public class GameStage extends BaseStage<MainGame> {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (gameState == GameState.fly) {
+        if (birdState == BirdState.fly) {
             // 小鸟正在飞翔状态(没有碰撞到水管和地板), 并且没有飞出屏幕上方, 则响应屏幕触摸给小鸟设置一个向上的速度
             if (birdGroup.getMyBird().getTopY() < getHeight()) {
                 birdGroup.getMyBird().onTap();
                 // 播放触摸屏幕音效
-                getGame().getSoundsManager().touch();
+                if (getGame().hasSounds()) {
+                    touchSound.play();
+                }
 
                 getGame().send(DataFactory.packJump(new DataFactory.JumpEntity(
                         birdGroup.getMyImei(), birdGroup.getMyBird().getY()
@@ -438,7 +475,7 @@ public class GameStage extends BaseStage<MainGame> {
 
             case DataFactory.TYPE_DIE:
                 imei = DataFactory.unpackDie(data);
-                birdGroup.setState(imei, GameState.drop);
+                birdGroup.setState(imei, BirdState.drop);
 
                 //如果所有小鸟都死亡并且自己是服务器
                 if (birdGroup.isAllBirdDied() && DataService.isServer()) {

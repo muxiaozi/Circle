@@ -11,6 +11,11 @@ import java.io.IOException;
  */
 public abstract class DataFactory {
     /**
+     * 要求玩家准备，另一个作用是确保所有玩家正确开始游戏
+     */
+    public static final byte TYPE_REQUEST_PREPARE = 1;
+
+    /**
      * 游戏结束
      */
     public static final byte TYPE_GAME_OVER = 3;
@@ -36,15 +41,9 @@ public abstract class DataFactory {
     public static final byte TYPE_OVER_BAR = 6;
 
     /**
-     * 要求玩家准备，另一个作用是确保所有玩家正确开始游戏
-     */
-    public static final byte TYPE_REQUEST_PREPARE = 7;
-
-    /**
      * 预备
      */
     public static final byte TYPE_READY = 8;
-
 
     /**
      * 游戏结束

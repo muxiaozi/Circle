@@ -1,6 +1,7 @@
 package cn.muxiaozi.circle.game.flappy_bird.stage;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -37,6 +38,11 @@ public class GameOverStage extends BaseStage<MainGame> {
      */
     private ImageButton restartButton;
 
+    /**
+     * 点击按钮恢复到初始状态时播放的音效
+     */
+    private Sound restartSound;
+
 
     public GameOverStage(MainGame mainGame, Viewport viewport) {
         super(mainGame, viewport);
@@ -44,6 +50,9 @@ public class GameOverStage extends BaseStage<MainGame> {
     }
 
     private void init() {
+        //音效初始化
+        restartSound = getGame().getAssetManager().get(Res.Audios.AUDIO_RESTART, Sound.class);
+
         // 创建游戏结束提示
         gameOverActor = new BaseActor(getGame().getAtlas().findRegion(Res.Atlas.IMAGE_GAME_OVER));
         gameOverActor.setCenterX(getWidth() / 2);
@@ -71,7 +80,9 @@ public class GameOverStage extends BaseStage<MainGame> {
             public void clicked(InputEvent event, float x, float y) {
                 if (DataService.isServer()) {
                     getGame().send(DataFactory.packRequestPrepare());
-                    getGame().getSoundsManager().restart();
+                    if (getGame().hasSounds()) {
+                        restartSound.play();
+                    }
                     getGame().getGameScreen().restartReadyGame();
                 }
             }
