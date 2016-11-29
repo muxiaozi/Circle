@@ -3,57 +3,43 @@ package cn.muxiaozi.circle.room;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import cn.muxiaozi.circle.utils.InfoUtil;
+import cn.muxiaozi.circle.utils.Config;
 
 /**
  * Created by 慕宵子 on 2016/7/18.
  * <p>
  * 用户信息实体
  */
-public class UserBean implements Parcelable {
+public class UserBean implements Parcelable{
 
     /**
-     * 头像
+     * 唯一识别号
      */
-    private int headImage;
+    private String uniqueID;
+
     /**
      * 姓名
      */
     private String name;
-    /**
-     * 个性签名
-     */
-    private String autograph;
 
     /**
-     * imei手机识别号
+     * 头像
      */
-    private String imei;
-
-    /**
-     * 是否准备
-     */
-    private boolean isPrepare;
+    private int headPortrait;
 
     public UserBean() {
-        this.imei = InfoUtil.DEFAULT_IMEI;
-        this.isPrepare = false;
     }
 
-    public UserBean(int headImage, String name, String autograph, String imei) {
-        this.headImage = headImage;
+    public UserBean(String uniqueID, String name, int headPortrait) {
+        this.uniqueID = uniqueID;
         this.name = name;
-        this.autograph = autograph;
-        this.imei = imei;
-        this.isPrepare = false;
+        this.headPortrait = headPortrait;
     }
 
     protected UserBean(Parcel in) {
-        headImage = in.readInt();
+        uniqueID = in.readString();
         name = in.readString();
-        autograph = in.readString();
-        imei = in.readString();
-        isPrepare = in.readByte() != 0;
+        headPortrait = in.readInt();
     }
 
     public static final Creator<UserBean> CREATOR = new Creator<UserBean>() {
@@ -68,12 +54,12 @@ public class UserBean implements Parcelable {
         }
     };
 
-    public int getHeadImage() {
-        return headImage;
+    public int getHeadPortrait() {
+        return headPortrait;
     }
 
-    public void setHeadImage(int headImage) {
-        this.headImage = headImage;
+    public void setHeadPortrait(int headPortrait) {
+        this.headPortrait = headPortrait;
     }
 
     public String getName() {
@@ -84,28 +70,12 @@ public class UserBean implements Parcelable {
         this.name = name;
     }
 
-    public String getAutograph() {
-        return autograph;
+    public String getUniqueID() {
+        return uniqueID;
     }
 
-    public void setAutograph(String autograph) {
-        this.autograph = autograph;
-    }
-
-    public String getImei() {
-        return imei;
-    }
-
-    public void setImei(String imei) {
-        this.imei = imei;
-    }
-
-    public boolean isPrepare() {
-        return isPrepare;
-    }
-
-    public void setPrepare(boolean prepare) {
-        isPrepare = prepare;
+    public void setUniqueID(String uniqueID) {
+        this.uniqueID = uniqueID;
     }
 
     @Override
@@ -115,10 +85,8 @@ public class UserBean implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(headImage);
+        dest.writeString(uniqueID);
         dest.writeString(name);
-        dest.writeString(autograph);
-        dest.writeString(imei);
-        dest.writeByte((byte) (isPrepare ? 1 : 0));
+        dest.writeInt(headPortrait);
     }
 }

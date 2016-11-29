@@ -37,8 +37,6 @@ public abstract class DataFactory {
 
     /**
      * 打包心跳数据
-     *
-     * @return 数据
      */
     static byte[] packHeartBeat() {
         byte[] data = new byte[1];

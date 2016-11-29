@@ -10,7 +10,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import cn.muxiaozi.circle.R;
-import cn.muxiaozi.circle.utils.InfoUtil;
+import cn.muxiaozi.circle.utils.Config;
 
 /**
  * Created by 慕宵子 on 2016/7/28.
@@ -29,7 +29,7 @@ public class NavigationAdapter extends RecyclerView.Adapter<NavigationAdapter.Vi
 
     public NavigationAdapter(Context context) {
         this.mInflater = LayoutInflater.from(context);
-        String version = InfoUtil.getVersion(context);
+        String version = Config.getVersion(context);
 
         mData = new ArrayList<>(5);
         mData.add(new NavItemBean(R.mipmap.nav_info, "个人资料", null, NavItemBean.TYPE_NORMAL));

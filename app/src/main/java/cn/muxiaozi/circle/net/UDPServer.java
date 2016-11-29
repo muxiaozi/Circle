@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import cn.muxiaozi.circle.base.Constants;
+import cn.muxiaozi.circle.base.IConfig;
 import cn.muxiaozi.circle.room.UserBean;
 import cn.muxiaozi.circle.utils.LogUtil;
 
@@ -32,7 +32,7 @@ class UDPServer implements Runnable, ISocket {
 
     private boolean isRunning;
 
-    public UDPServer(IDataService listener) {
+    UDPServer(IDataService listener) {
         mListener = listener;
         mReceiverPacket = new DatagramPacket(new byte[512], 512);
 
@@ -43,7 +43,7 @@ class UDPServer implements Runnable, ISocket {
     @Override
     public void run() {
         try {
-            mServerSocket = new DatagramSocket(Constants.LOCAL_PORT);
+            mServerSocket = new DatagramSocket(IConfig.LOCAL_PORT);
 
             //开始心跳
             mDataHandle = new DataHandle(mServerSocket);
@@ -87,7 +87,7 @@ class UDPServer implements Runnable, ISocket {
         DataHandle(DatagramSocket socket) {
             mSocket = socket;
 
-            mClients = new ArrayList<>(Constants.MAX_CLIENT_NUM);
+            mClients = new ArrayList<>(IConfig.MAX_CLIENT_NUM);
             sendQueue = new ArrayBlockingQueue<>(5);
             receiveQueue = new ArrayBlockingQueue<>(5);
         }
@@ -135,7 +135,7 @@ class UDPServer implements Runnable, ISocket {
                         }
                     } else {
                         if (tmpData[0] == DataFactory.TYPE_FRIEND_IN) {
-                            mListener.getOnlineUserInfo(new DataService.IGetUserInfo() {
+                            mListener.getOnlineUserInfo(new IDataService.IGetUserInfo() {
                                 @Override
                                 public void onGet(UserBean bean) {
                                     sendToOne(DataFactory.packFriendIn(bean), tmpPacket.getAddress());
@@ -182,7 +182,7 @@ class UDPServer implements Runnable, ISocket {
             for (ClientEntity entity : mClients) {
                 if (entity.address.equals(address)) continue;
                 try {
-                    mSocket.send(new DatagramPacket(data, 0, data.length, entity.address, Constants.LOCAL_PORT));
+                    mSocket.send(new DatagramPacket(data, 0, data.length, entity.address, IConfig.LOCAL_PORT));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -191,7 +191,7 @@ class UDPServer implements Runnable, ISocket {
 
         private void sendToOne(byte[] data, InetAddress address) {
             try {
-                mSocket.send(new DatagramPacket(data, 0, data.length, address, Constants.LOCAL_PORT));
+                mSocket.send(new DatagramPacket(data, 0, data.length, address, IConfig.LOCAL_PORT));
             } catch (IOException e) {
                 e.printStackTrace();
             }

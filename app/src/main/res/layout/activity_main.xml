@@ -1,73 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/draw_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
+
+
+    <android.support.v4.widget.DrawerLayout
+        android:id="@+id/draw_main"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <include layout="@layout/view_toolbar" />
-
-            <FrameLayout
-                android:id="@+id/frame_main"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </LinearLayout>
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-        <cn.muxiaozi.circle.view.FloatingActionMenu
-            android:id="@+id/fab_menu"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:item_padding="@dimen/floating_menu_item_padding"
-            android:background="#0000">
+                <include layout="@layout/view_toolbar" />
 
-            <android.support.design.widget.FloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_add" />
+                <FrameLayout
+                    android:id="@+id/frame_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab_invite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_flag"
-                android:visibility="invisible"
-                app:backgroundTint="@color/colorPrimary" />
+            <cn.muxiaozi.circle.view.FloatingActionMenu
+                android:id="@+id/fab_menu"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="#0000"
+                app:item_padding="@dimen/floating_menu_item_padding">
+            </cn.muxiaozi.circle.view.FloatingActionMenu>
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab_join"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@mipmap/ic_search"
-                android:visibility="invisible"
-                app:backgroundTint="@color/colorPrimary" />
-        </cn.muxiaozi.circle.view.FloatingActionMenu>
+        </FrameLayout>
 
-    </FrameLayout>
+        <android.support.design.widget.NavigationView
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            app:headerLayout="@layout/nav_header_main"
+            app:menu="@menu/nav_menu" />
 
-    <LinearLayout
-        android:layout_width="288dp"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:orientation="vertical">
-
-        <include layout="@layout/header_navigation" />
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv_navigation"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@color/white" />
-    </LinearLayout>
-
-</android.support.v4.widget.DrawerLayout>
+    </android.support.v4.widget.DrawerLayout>
+</android.support.design.widget.CoordinatorLayout>
 
 

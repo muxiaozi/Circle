@@ -13,10 +13,10 @@ import android.widget.Button;
 import java.util.ArrayList;
 
 import cn.muxiaozi.circle.R;
-import cn.muxiaozi.circle.base.Constants;
+import cn.muxiaozi.circle.base.IConfig;
 import cn.muxiaozi.circle.game.GameID;
-import cn.muxiaozi.circle.game.flappy_bird.FlappyBirdActivity;
-import cn.muxiaozi.circle.game.link.LinkActivity;
+import cn.muxiaozi.circle.libgdx.flappy_bird.FlappyBirdActivity;
+import cn.muxiaozi.circle.libgdx.link.LinkActivity;
 import cn.muxiaozi.circle.game.speedTest;
 import cn.muxiaozi.circle.net.DataFactory;
 import cn.muxiaozi.circle.net.DataService;
@@ -66,7 +66,7 @@ public class RoomActivity extends AppCompatActivity implements RoomContract.View
             mBtnStart.setOnClickListener(this);
         }
 
-        mGameID = getIntent().getIntExtra(Constants.KEY_GAME_ID, GameID.NULL);
+        mGameID = getIntent().getIntExtra(IConfig.KEY_GAME_ID, GameID.NULL);
 
         isServer = DataService.isServer();
         if (isServer) {
@@ -89,7 +89,7 @@ public class RoomActivity extends AppCompatActivity implements RoomContract.View
             @Override
             public void onClick(UserBean player) {
                 Intent intent = new Intent(RoomActivity.this, PlayerInfo.class);
-                intent.putExtra(Constants.KEY_USER_INFO, player);
+                intent.putExtra(IConfig.KEY_USER_INFO, player);
                 startActivity(intent);
             }
         });
@@ -175,7 +175,7 @@ public class RoomActivity extends AppCompatActivity implements RoomContract.View
         }
 
         if (intent != null) {
-            intent.putExtra(Constants.KEY_USER_INFO, entity.players);
+            intent.putExtra(IConfig.KEY_USER_INFO, entity.players);
             startActivity(intent);
         }
 
@@ -199,6 +199,7 @@ public class RoomActivity extends AppCompatActivity implements RoomContract.View
 
     @Override
     protected void onDestroy() {
+        mRoomPresenter.cancelPrepare();
         mRoomPresenter.onDestroy();
         super.onDestroy();
     }

@@ -17,7 +17,7 @@ interface RoomContract {
 
     abstract class Presenter extends BasePresenter<View> {
 
-        public Presenter(Context context, View view) {
+        Presenter(Context context, View view) {
             super(context, view);
         }
 

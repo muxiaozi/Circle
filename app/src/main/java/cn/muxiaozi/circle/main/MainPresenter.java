@@ -4,13 +4,17 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.LocationManager;
 import android.net.wifi.ScanResult;
+import android.os.Build;
 
 import java.util.List;
 
-import cn.muxiaozi.circle.base.Constants;
+import cn.muxiaozi.circle.base.IConfig;
 import cn.muxiaozi.circle.net.DataService;
+import cn.muxiaozi.circle.connect.WifiModule;
 import cn.muxiaozi.circle.room.RoomActivity;
+import cn.muxiaozi.circle.utils.ToastUtil;
 
 /**
  * Created by 慕宵子 on 2016/4/22.
@@ -44,7 +48,7 @@ class MainPresenter extends MainContract.Presenter {
         mContext.startService(intent);
 
         //注册广播接受
-        mContext.registerReceiver(mReceiver, new IntentFilter(Constants.ACTION_DISCONNECT));
+        mContext.registerReceiver(mReceiver, new IntentFilter(IConfig.ACTION_DISCONNECT));
     }
 
     @Override
@@ -54,7 +58,18 @@ class MainPresenter extends MainContract.Presenter {
             @Override
             public void onSuccess(String message) {
                 mView.hideProgressDialog();
-                mView.showNearby();
+
+                //安卓6.0以上搜索热点需要打开GPS
+                LocationManager locationManager = (LocationManager)
+                        mContext.getSystemService(Context.LOCATION_SERVICE);
+
+                // 判断GPS模块是否开启，如果没有则开启
+                if (Build.VERSION.SDK_INT > 22 && !locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+                    mView.showOpenGpsDialog();
+                    ToastUtil.showLong(mContext, "请打开GPS搜索附近圈圈！");
+                } else {
+                    mView.showNearby();
+                }
             }
 
             @Override
@@ -79,7 +94,7 @@ class MainPresenter extends MainContract.Presenter {
                 //启动客户端模式
                 Intent intent = new Intent(mContext, DataService.class);
                 intent.setFlags(DataService.STATE_CLIENT);
-                intent.putExtra(Constants.KEY_REMOTE_IP, mWifiModule.getRemoteIpAddress());
+                intent.putExtra(IConfig.KEY_REMOTE_IP, mWifiModule.getRemoteIpAddress());
                 mContext.startService(intent);
 
                 mContext.startActivity(new Intent(mContext, RoomActivity.class));
@@ -134,7 +149,7 @@ class MainPresenter extends MainContract.Presenter {
         @Override
         public void onReceive(Context context, Intent intent) {
             switch (intent.getAction()) {
-                case Constants.ACTION_DISCONNECT:
+                case IConfig.ACTION_DISCONNECT:
                     mView.setFabMenuWorkState(false);
                     break;
             }

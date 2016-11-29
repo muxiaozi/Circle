@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 import cn.muxiaozi.circle.R;
 import cn.muxiaozi.circle.utils.ImageUtil;
-import cn.muxiaozi.circle.utils.InfoUtil;
 
 /**
  * Created by 慕宵子 on 2016/7/24.

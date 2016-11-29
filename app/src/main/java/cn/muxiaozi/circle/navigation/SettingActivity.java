@@ -9,7 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import cn.muxiaozi.circle.R;
-import cn.muxiaozi.circle.base.Constants;
+import cn.muxiaozi.circle.base.IConfig;
 
 /**
  * Created by 慕宵子 on 2016/7/29.
@@ -37,16 +37,16 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         findViewById(R.id.ll_music).setOnClickListener(this);
         findViewById(R.id.ll_sounds).setOnClickListener(this);
 
-        mPreferences = getSharedPreferences(Constants.CIRCLE_CONFIG, MODE_PRIVATE);
+        mPreferences = getSharedPreferences(IConfig.CIRCLE_CONFIG, MODE_PRIVATE);
 
         switchFps = (SwitchCompat) findViewById(R.id.sc_fps);
-        switchFps.setChecked(mPreferences.getBoolean(Constants.ConfigOption.FPS, false));
+        switchFps.setChecked(mPreferences.getBoolean(IConfig.Option.FPS, false));
 
         switchMusic = (SwitchCompat) findViewById(R.id.sc_music);
-        switchMusic.setChecked(mPreferences.getBoolean(Constants.ConfigOption.MUSIC, true));
+        switchMusic.setChecked(mPreferences.getBoolean(IConfig.Option.MUSIC, true));
 
         switchSounds = (SwitchCompat) findViewById(R.id.sc_sounds);
-        switchSounds.setChecked(mPreferences.getBoolean(Constants.ConfigOption.SOUNDS, true));
+        switchSounds.setChecked(mPreferences.getBoolean(IConfig.Option.SOUNDS, true));
     }
 
     private void initToolBar() {
@@ -82,9 +82,9 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         super.onPause();
         SharedPreferences.Editor editor = mPreferences.edit();
 
-        editor.putBoolean(Constants.ConfigOption.FPS, switchFps.isChecked());
-        editor.putBoolean(Constants.ConfigOption.MUSIC, switchMusic.isChecked());
-        editor.putBoolean(Constants.ConfigOption.SOUNDS, switchSounds.isChecked());
+        editor.putBoolean(IConfig.Option.FPS, switchFps.isChecked());
+        editor.putBoolean(IConfig.Option.MUSIC, switchMusic.isChecked());
+        editor.putBoolean(IConfig.Option.SOUNDS, switchSounds.isChecked());
 
         editor.apply();
     }

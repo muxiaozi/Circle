@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_info"
+        android:title="个人资料" />
+    <item
+        android:id="@+id/action_setting"
+        android:title="设置" />
+    <item
+        android:id="@+id/action_upgrade"
+        android:title="版本更新" />
+    <item
+        android:id="@+id/action_feedback"
+        android:title="意见反馈" />
+    <item
+        android:id="@+id/action_about"
+        android:title="关于圈圈" />
+</menu>

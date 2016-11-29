@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import cn.muxiaozi.circle.R;
-import cn.muxiaozi.circle.base.Constants;
+import cn.muxiaozi.circle.base.IConfig;
 import cn.muxiaozi.circle.utils.ImageUtil;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -34,7 +34,7 @@ public class PlayerInfo extends AppCompatActivity {
         TextView name = (TextView) findViewById(R.id.tv_name);
         TextView autograph = (TextView) findViewById(R.id.tv_autograph);
 
-        UserBean myInfo = getIntent().getParcelableExtra(Constants.KEY_USER_INFO);
+        UserBean myInfo = getIntent().getParcelableExtra(IConfig.KEY_USER_INFO);
         if (myInfo != null) {
             Bitmap bitmap = ImageUtil.getHeadImg(this, myInfo.getHeadImage());
             headImg.setImageBitmap(bitmap);

@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import cn.muxiaozi.circle.R;
-import cn.muxiaozi.circle.utils.InfoUtil;
+import cn.muxiaozi.circle.utils.Config;
 
 /**
  * Created by 慕宵子 on 2016/7/29.
@@ -25,7 +25,7 @@ public class AboutActivity extends AppCompatActivity {
     private void initView() {
         initToolBar();
 
-        String version = InfoUtil.getVersion(this);
+        String version = Config.getVersion(this);
         TextView txtVersion = (TextView) findViewById(R.id.tv_version);
         txtVersion.setText("V " + version);
     }

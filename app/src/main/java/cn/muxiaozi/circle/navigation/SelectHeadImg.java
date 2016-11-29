@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 
 import cn.muxiaozi.circle.R;
 import cn.muxiaozi.circle.utils.ImageUtil;
-import cn.muxiaozi.circle.utils.InfoUtil;
+import cn.muxiaozi.circle.utils.Config;
 
 /**
  * Created by 慕宵子 on 2016/7/29.
@@ -75,7 +75,7 @@ public class SelectHeadImg extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent data = new Intent();
-                data.putExtra(InfoUtil.HEAD_IMAGE, id);
+                data.putExtra(Config.HEAD_IMAGE, id);
                 setResult(RESULT_OK, data);
                 finish();
             }

@@ -15,10 +15,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import cn.muxiaozi.circle.R;
-import cn.muxiaozi.circle.base.Constants;
+import cn.muxiaozi.circle.base.IConfig;
 import cn.muxiaozi.circle.room.UserBean;
 import cn.muxiaozi.circle.utils.ImageUtil;
-import cn.muxiaozi.circle.utils.InfoUtil;
+import cn.muxiaozi.circle.utils.Config;
 
 /**
  * Created by 慕宵子 on 2016/7/29.
@@ -39,7 +39,7 @@ public class SetInfoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_info);
 
-        myInfo = InfoUtil.getMyInfo(this);
+        myInfo = Config.getMyInfo(this);
         initView();
     }
 
@@ -59,15 +59,15 @@ public class SetInfoActivity extends AppCompatActivity {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences preferences = getSharedPreferences(Constants.CIRCLE_CONFIG, MODE_PRIVATE);
+                SharedPreferences preferences = getSharedPreferences(IConfig.CIRCLE_CONFIG, MODE_PRIVATE);
                 SharedPreferences.Editor editor = preferences.edit();
-                editor.putInt(InfoUtil.HEAD_IMAGE, myInfo.getHeadImage());
+                editor.putInt(Config.HEAD_IMAGE, myInfo.getHeadImage());
 
                 if (!TextUtils.isEmpty(mName.getText())) {
-                    editor.putString(InfoUtil.NAME, mName.getText().toString());
+                    editor.putString(Config.NAME, mName.getText().toString());
                 }
                 if (!TextUtils.isEmpty(mAutograph.getText())) {
-                    editor.putString(InfoUtil.AUTOGRAPH, mAutograph.getText().toString());
+                    editor.putString(Config.AUTOGRAPH, mAutograph.getText().toString());
                 }
                 editor.apply();
 
@@ -106,7 +106,7 @@ public class SetInfoActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_HEAD_IMG:
                 if (resultCode == RESULT_OK) {
-                    final int headImgID = data.getIntExtra(InfoUtil.HEAD_IMAGE, 0);
+                    final int headImgID = data.getIntExtra(Config.HEAD_IMAGE, 0);
                     myInfo.setHeadImage(headImgID);
                     Bitmap bitmap = ImageUtil.getHeadImg(this, headImgID);
                     if (bitmap != null) {

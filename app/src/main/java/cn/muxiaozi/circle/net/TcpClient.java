@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import cn.muxiaozi.circle.base.Constants;
+import cn.muxiaozi.circle.base.IConfig;
 import cn.muxiaozi.circle.room.UserBean;
 import cn.muxiaozi.circle.utils.LogUtil;
 
@@ -38,7 +38,7 @@ class TcpClient implements Runnable, ISocket {
     public void run() {
 
         try {
-            mSocket = new Socket(mRemoteIP, Constants.LOCAL_PORT);
+            mSocket = new Socket(mRemoteIP, IConfig.LOCAL_PORT);
             LogUtil.i("Client成功连接到服务器...");
 
             //获取输入输出流
@@ -46,7 +46,7 @@ class TcpClient implements Runnable, ISocket {
             dis = new DataInputStream(mSocket.getInputStream());
 
             //把自己的信息发送到服务器
-            mDelivery.getMyInfo(new DataService.IGetUserInfo() {
+            mDelivery.getMyInfo(new IDataService.IGetUserInfo() {
                 @Override
                 public void onGet(UserBean bean) {
                     send(DataFactory.packFriendIn(bean));

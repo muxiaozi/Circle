@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import cn.muxiaozi.circle.base.Constants;
+import cn.muxiaozi.circle.base.IConfig;
 import cn.muxiaozi.circle.room.UserBean;
 import cn.muxiaozi.circle.utils.LogUtil;
 
@@ -19,7 +19,7 @@ class TcpServer implements Runnable, ISocket {
     private static ServerSocket mServerSocket;
 
     private final Set<Socket> mSockets = Collections.synchronizedSet(
-            new HashSet<Socket>(Constants.MAX_CLIENT_NUM));
+            new HashSet<Socket>(IConfig.MAX_CLIENT_NUM));
 
     //保存Service对象
     private IDataService mDelivery;
@@ -38,14 +38,14 @@ class TcpServer implements Runnable, ISocket {
     @Override
     public void run() {
         try {
-            mServerSocket = new ServerSocket(Constants.LOCAL_PORT);
-            LogUtil.i("服务器监听端口" + Constants.LOCAL_PORT + "...");
+            mServerSocket = new ServerSocket(IConfig.LOCAL_PORT);
+            LogUtil.i("服务器监听端口" + IConfig.LOCAL_PORT + "...");
 
             while (isRunning) {
                 Socket socket = mServerSocket.accept();
 
                 //检测用户是否已满
-                if (mSockets.size() < Constants.MAX_CLIENT_NUM) {
+                if (mSockets.size() < IConfig.MAX_CLIENT_NUM) {
                     new Client(socket).start();
                 } else {
                     socket.close();
@@ -88,7 +88,7 @@ class TcpServer implements Runnable, ISocket {
                 dos = new DataOutputStream(socket.getOutputStream());
 
                 //给新连入的客户端发送大厅中的其他人信息
-                mDelivery.getOnlineUserInfo(new DataService.IGetUserInfo() {
+                mDelivery.getOnlineUserInfo(new IDataService.IGetUserInfo() {
                     @Override
                     public void onGet(UserBean bean) {
                         sendDataToSender(DataFactory.packFriendIn(bean));
@@ -103,7 +103,7 @@ class TcpServer implements Runnable, ISocket {
 
                     //如果是新加入的信息，则记录下来
                     if (data[0] == DataFactory.TYPE_FRIEND_IN) {
-                        mDelivery.getOnlineUserInfo(new DataService.IGetUserInfo() {
+                        mDelivery.getOnlineUserInfo(new IDataService.IGetUserInfo() {
                             @Override
                             public void onGet(UserBean bean) {
                                 sendDataToSender(DataFactory.packFriendIn(bean));

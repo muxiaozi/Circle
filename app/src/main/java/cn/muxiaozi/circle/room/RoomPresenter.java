@@ -12,7 +12,7 @@ import cn.muxiaozi.circle.net.DataFactory;
 import cn.muxiaozi.circle.net.DataService;
 import cn.muxiaozi.circle.net.IReceiver;
 import cn.muxiaozi.circle.utils.AsyncRun;
-import cn.muxiaozi.circle.utils.InfoUtil;
+import cn.muxiaozi.circle.utils.Config;
 
 /**
  * Created by 慕宵子 on 2016/7/24.
@@ -28,7 +28,7 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
         Intent intent = new Intent(context, DataService.class);
         context.bindService(intent, mConn, Context.BIND_AUTO_CREATE);
 
-        myImei = InfoUtil.getImei(context);
+        myImei = Config.getImei(context);
     }
 
     /**
@@ -47,14 +47,6 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
             //如果是服务器，默认是准备状态
             if (DataService.isServer()) {
                 prepare();
-            } else {
-                //如果是客户端，只需要设置为之前保存的状态
-                for (UserBean player : playList) {
-                    if (player.getImei().equals(myImei)) {
-                        mView.setPrepare(player.isPrepare());
-                        break;
-                    }
-                }
             }
         }
 
@@ -177,6 +169,11 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
 
     @Override
     public void onDestroy() {
+        //退出房间时，自动取消准备
+        if (mDeliver != null) {
+            mDeliver.removeObserver(RoomPresenter.this);
+        }
+
         mContext.unbindService(mConn);
     }
 }

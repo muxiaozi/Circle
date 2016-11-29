@@ -1,12 +1,15 @@
 package cn.muxiaozi.circle.main;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.location.LocationManager;
 import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -26,9 +29,9 @@ import java.util.List;
 
 import cn.muxiaozi.circle.R;
 import cn.muxiaozi.circle.game.GameFragment;
-import cn.muxiaozi.circle.main.version.VersionContract;
-import cn.muxiaozi.circle.main.version.VersionInfo;
-import cn.muxiaozi.circle.main.version.VersionPresenter;
+import cn.muxiaozi.circle.version.VersionContract;
+import cn.muxiaozi.circle.version.VersionInfo;
+import cn.muxiaozi.circle.version.VersionPresenter;
 import cn.muxiaozi.circle.navigation.AboutActivity;
 import cn.muxiaozi.circle.navigation.FeedBackActivity;
 import cn.muxiaozi.circle.navigation.NavigationAdapter;
@@ -36,7 +39,7 @@ import cn.muxiaozi.circle.navigation.SetInfoActivity;
 import cn.muxiaozi.circle.navigation.SettingActivity;
 import cn.muxiaozi.circle.room.UserBean;
 import cn.muxiaozi.circle.utils.ImageUtil;
-import cn.muxiaozi.circle.utils.InfoUtil;
+import cn.muxiaozi.circle.utils.Config;
 import cn.muxiaozi.circle.utils.NetWorkUtil;
 import cn.muxiaozi.circle.view.FloatingActionMenu;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
     private ProgressDialog mProgressDialog;
 
     private static final int REQUEST_MY_INFO = 1;
+    private static final int REQUEST_GPS = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,12 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
             case REQUEST_MY_INFO:
                 if (resultCode == RESULT_OK) {
                     initMyInfo();
+                }
+                break;
+            case REQUEST_GPS:
+                LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                if (locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)) {
+                    showNearby();
                 }
                 break;
         }
@@ -124,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
      * 初始化个人信息
      */
     private void initMyInfo() {
-        UserBean myInfo = InfoUtil.getMyInfo(this);
+        UserBean myInfo = Config.getMyInfo(this);
         CircleImageView headImg = (CircleImageView) findViewById(R.id.civ_img);
         Bitmap bitmap = ImageUtil.getHeadImg(this, myInfo.getHeadImage());
         if (bitmap != null) {
@@ -295,6 +305,12 @@ public class MainActivity extends AppCompatActivity implements MainContract.View
         } else {
             mFabMenu.cancelWork();
         }
+    }
+
+    @Override
+    public void showOpenGpsDialog() {
+        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivityForResult(intent, REQUEST_GPS); // 设置完成后返回到原来的界面
     }
 
     @Override

@@ -16,7 +16,7 @@ import cn.muxiaozi.circle.base.BaseView;
 interface MainContract {
 
     abstract class Presenter extends BasePresenter<View>{
-        public Presenter(Context context, View view) {
+        Presenter(Context context, View view) {
             super(context, view);
         }
 
@@ -56,5 +56,7 @@ interface MainContract {
         void showNearby();
 
         void setFabMenuWorkState(boolean isWork);
+
+        void showOpenGpsDialog();
     }
 }

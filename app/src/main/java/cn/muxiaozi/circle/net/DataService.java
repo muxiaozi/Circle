@@ -11,15 +11,17 @@ import java.util.HashMap;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import cn.muxiaozi.circle.base.Constants;
+import cn.muxiaozi.circle.base.IConfig;
+import cn.muxiaozi.circle.net.socket.ISocket;
+import cn.muxiaozi.circle.net.socket.TcpClient;
+import cn.muxiaozi.circle.net.socket.TcpServer;
 import cn.muxiaozi.circle.room.UserBean;
 import cn.muxiaozi.circle.utils.AsyncRun;
-import cn.muxiaozi.circle.utils.InfoUtil;
+import cn.muxiaozi.circle.utils.Config;
 import cn.muxiaozi.circle.utils.LogUtil;
 import cn.muxiaozi.circle.utils.ToastUtil;
 
 public class DataService extends Service implements IDataService {
-
     // 终端的三种状态: 无连接、服务器、客户端
     public static final int STATE_NONE = 0;
     public static final int STATE_SERVER = 1;
@@ -40,14 +42,16 @@ public class DataService extends Service implements IDataService {
     private Thread dataLoopThread;
 
     //程序运行状态，默认运行
-    private volatile boolean isRunning = true;
+    private boolean isRunning = true;
 
     //观察者
     private ArrayList<IReceiver> observers;
 
+    private MessageBinder messageBinder = new MessageBinder();
+
     @Override
     public IBinder onBind(Intent intent) {
-        return new MessageBinder();
+        return messageBinder;
     }
 
     @Override
@@ -64,8 +68,8 @@ public class DataService extends Service implements IDataService {
         dataLoopThread.start();
 
         //初始化在线朋友列表
-        mOnlineFriends = new HashMap<>(Constants.MAX_CLIENT_NUM);
-        mOnlineFriends.put(InfoUtil.getImei(this), InfoUtil.getMyInfo(this));
+        mOnlineFriends = new HashMap<>(IConfig.MAX_CLIENT_NUM);
+        mOnlineFriends.put(Config.getImei(this), Config.getMyInfo(this));
     }
 
     /**
@@ -77,6 +81,8 @@ public class DataService extends Service implements IDataService {
             try {
                 while (isRunning) {
                     byte[] data = dataQueue.take();
+
+                    LogUtil.i("data[0]:" + data[0]);
 
                     //Service预处理
                     switch (data[0]) {
@@ -130,7 +136,7 @@ public class DataService extends Service implements IDataService {
             switch (mState) {
                 case STATE_NONE:
                     mOnlineFriends.clear();
-                    mOnlineFriends.put(InfoUtil.getImei(this), InfoUtil.getMyInfo(this));
+                    mOnlineFriends.put(Config.getImei(this), Config.getMyInfo(this));
                     if (mSocket != null) {
                         mSocket.close();
                     }
@@ -141,7 +147,7 @@ public class DataService extends Service implements IDataService {
                     break;
 
                 case STATE_CLIENT:
-                    final String remoteIP = intent.getExtras().getString(Constants.KEY_REMOTE_IP);
+                    final String remoteIP = intent.getExtras().getString(IConfig.KEY_REMOTE_IP);
                     mSocket = new TcpClient(this, remoteIP);
                     break;
             }
@@ -152,7 +158,7 @@ public class DataService extends Service implements IDataService {
 
     @Override
     public void getMyInfo(IGetUserInfo receiver) {
-        receiver.onGet(InfoUtil.getMyInfo(this));
+        receiver.onGet(Config.getMyInfo(this));
     }
 
     @Override
@@ -187,9 +193,9 @@ public class DataService extends Service implements IDataService {
         mState = STATE_NONE;
 
         mOnlineFriends.clear();
-        mOnlineFriends.put(InfoUtil.getImei(this), InfoUtil.getMyInfo(this));
+        mOnlineFriends.put(Config.getImei(this), Config.getMyInfo(this));
 
-        Intent intent = new Intent(Constants.ACTION_DISCONNECT);
+        Intent intent = new Intent(IConfig.ACTION_DISCONNECT);
         sendBroadcast(intent);
     }
 
@@ -223,7 +229,7 @@ public class DataService extends Service implements IDataService {
 
         // 设置自己的准备状态
         public void setPrepare(boolean isPrepare) {
-            mOnlineFriends.get(InfoUtil.getImei(DataService.this)).setPrepare(isPrepare);
+            mOnlineFriends.get(Config.getImei(DataService.this)).setPrepare(isPrepare);
         }
 
         // 设置游戏消息监听器
