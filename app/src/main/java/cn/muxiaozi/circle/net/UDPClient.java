@@ -8,7 +8,8 @@ import java.net.SocketAddress;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import cn.muxiaozi.circle.base.IConfig;
+import cn.muxiaozi.circle.core.IConfig;
+import cn.muxiaozi.circle.core.SystemPacket;
 import cn.muxiaozi.circle.room.UserBean;
 
 /**
@@ -16,12 +17,12 @@ import cn.muxiaozi.circle.room.UserBean;
  * <p>
  * UDP客户端
  */
-class UDPClient implements Runnable, ISocket {
+public class UDPClient implements Runnable, ISocket {
+
+    private final IReceiver mListener;
 
     private DatagramSocket mSocket;
     private DatagramPacket mReceiverPacket;
-
-    private IDataService mListener;
 
     private DataHandle mDataHandle;
 
@@ -29,7 +30,7 @@ class UDPClient implements Runnable, ISocket {
 
     private SocketAddress mServerAddress;
 
-    UDPClient(IDataService listener, String remoteIP) {
+    UDPClient(IReceiver listener, String remoteIP) {
         mListener = listener;
 
         mReceiverPacket = new DatagramPacket(new byte[512], 512);
@@ -56,17 +57,17 @@ class UDPClient implements Runnable, ISocket {
             mListener.getMyInfo(new IDataService.IGetUserInfo() {
                 @Override
                 public void onGet(UserBean bean) {
-                    send(DataFactory.packFriendIn(bean));
+                    send(SystemPacket.packFriendIn(bean));
                 }
             });
 
             while (isRunning) {
                 mSocket.receive(mReceiverPacket);
-                mListener.receive(mReceiverPacket.getData());
+                mListener.receive(mReceiverPacket.getData(), mReceiverPacket.getData()[0]);
             }
         } catch (IOException e) {
             e.printStackTrace();
-            mListener.receive(DataFactory.packDisconnectServer());
+            mListener.receive(SystemPacket.packDisconnectServer());
             close();
         }
     }

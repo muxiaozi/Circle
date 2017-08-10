@@ -18,7 +18,7 @@ import cn.muxiaozi.circle.utils.ImageUtil;
 /**
  * Created by 慕宵子 on 2016/7/24.
  */
-public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ViewHolder> {
+class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ViewHolder> {
 
     private ArrayList<UserBean> mData;
     private LayoutInflater mInflater;
@@ -45,22 +45,7 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ViewHolder
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         final UserBean player = mData.get(position);
-        Bitmap bitmap = ImageUtil.getHeadImg(mAssetManager, player.getHeadImage());
-        if(bitmap != null){
-            holder.headImage.setImageBitmap(bitmap);
-        }
 
-        holder.title.setText(player.getName() + (player.isPrepare() ? "-已准备" : "-未准备"));
-        holder.detail.setText(player.getAutograph());
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mListener != null) {
-                    mListener.onClick(player);
-                }
-            }
-        });
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -83,6 +68,25 @@ public class PlayerAdapter extends RecyclerView.Adapter<PlayerAdapter.ViewHolder
             headImage = (ImageView) itemView.findViewById(R.id.iv_cover);
             title = (TextView) itemView.findViewById(R.id.tv_title);
             detail = (TextView) itemView.findViewById(R.id.tv_detail);
+        }
+
+        void setData(UserBean bean){
+            Bitmap bitmap = ImageUtil.getHeadImg(mAssetManager, bean.getHeadImage());
+            if(bitmap != null){
+                headImage.setImageBitmap(bitmap);
+            }
+
+            title.setText(player.getName() + (bean.isPrepare() ? "-已准备" : "-未准备"));
+            holder.detail.setText(player.getAutograph());
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mListener != null) {
+                        mListener.onClick(player);
+                    }
+                }
+            });
         }
     }
 }

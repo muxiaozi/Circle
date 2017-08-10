@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.Disposable;
 
 import java.util.ArrayList;
 
-import cn.muxiaozi.circle.base.IConfig;
+import cn.muxiaozi.circle.core.IConfig;
 import cn.muxiaozi.circle.libgdx.flappy_bird.MainGame;
 import cn.muxiaozi.circle.libgdx.flappy_bird.BirdState;
 import cn.muxiaozi.circle.libgdx.flappy_bird.Res;

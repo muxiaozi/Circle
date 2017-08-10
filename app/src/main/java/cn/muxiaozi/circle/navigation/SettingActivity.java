@@ -9,7 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import cn.muxiaozi.circle.R;
-import cn.muxiaozi.circle.base.IConfig;
+import cn.muxiaozi.circle.core.IConfig;
 
 /**
  * Created by 慕宵子 on 2016/7/29.

@@ -21,7 +21,7 @@ import cn.muxiaozi.circle.libgdx.link.actor.LinkActor;
 import cn.muxiaozi.circle.libgdx.link.actor.PlayerActor;
 import cn.muxiaozi.circle.libgdx.link.actor.ReadyActor;
 import cn.muxiaozi.circle.libgdx.link.actor.TimeActor;
-import cn.muxiaozi.circle.net.DataService;
+import cn.muxiaozi.circle.core.CoreService;
 
 /**
  * Created by 慕宵子 on 2016/9/21 0021.
@@ -146,7 +146,7 @@ public class GameStage extends BaseStage<MainGame> {
         });
 
         //如果是服务端，则开始倒计时
-        if (DataService.isServer()) {
+        if (CoreService.isServer()) {
             readyActor.start();
         }
     }
@@ -155,7 +155,7 @@ public class GameStage extends BaseStage<MainGame> {
      * 需要轮流
      */
     private void requestTakeTurn() {
-        if (DataService.isServer()) {
+        if (CoreService.isServer()) {
             currentPlayerIndex = currentPlayerIndex < getGame().getPlayers().length - 1
                     ? currentPlayerIndex + 1 : 0;
             getGame().send(DataFactory.packTurn(currentPlayerIndex));
@@ -211,7 +211,7 @@ public class GameStage extends BaseStage<MainGame> {
             }
         }
 
-        if (DataService.isServer()) {
+        if (CoreService.isServer()) {
             getGame().send(DataFactory.packSyncMap(map));
         }
     }
@@ -480,7 +480,7 @@ public class GameStage extends BaseStage<MainGame> {
 
                         linkActor.link(linkPath);
 
-                        if (DataService.isServer()) {
+                        if (CoreService.isServer()) {
                             //检测游戏是否结束
                             if (isGameOver()) {
                                 createMap();
@@ -523,7 +523,7 @@ public class GameStage extends BaseStage<MainGame> {
             setDiamondType(x1, y1, (byte) -1);
             setDiamondType(x2, y2, (byte) -1);
 
-            if (DataService.isServer()) {
+            if (CoreService.isServer()) {
                 //检测游戏是否结束
                 if (isGameOver()) {
                     createMap();

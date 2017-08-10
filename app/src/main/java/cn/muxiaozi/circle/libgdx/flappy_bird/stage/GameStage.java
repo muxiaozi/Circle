@@ -23,7 +23,7 @@ import cn.muxiaozi.circle.libgdx.flappy_bird.actor.ReadyActor;
 import cn.muxiaozi.circle.libgdx.BaseActor;
 import cn.muxiaozi.circle.libgdx.BaseStage;
 import cn.muxiaozi.circle.libgdx.utils.CollisionUtils;
-import cn.muxiaozi.circle.net.DataService;
+import cn.muxiaozi.circle.core.CoreService;
 
 
 /**
@@ -222,7 +222,7 @@ public class GameStage extends BaseStage<MainGame> {
         // 设置点击提示和准备提示可见
         getReadyActor.setVisible(true);
         getReadyActor.setNum(3);
-        if (DataService.isServer()) {
+        if (CoreService.isServer()) {
             getReadyActor.startReady(new ReadyActor.OnReadyListener() {
                 @Override
                 public void update(int time) {
@@ -381,7 +381,7 @@ public class GameStage extends BaseStage<MainGame> {
                 birdGroup.getMyBird().setBirdState(BirdState.die);
             }
 
-            if (birdGroup.isAllBirdDied() && DataService.isServer()) {
+            if (birdGroup.isAllBirdDied() && CoreService.isServer()) {
                 getGame().send(DataFactory.packGameOver(birdGroup.getGrades()));
                 gameOver(birdGroup.getGrades());
             }
@@ -409,7 +409,7 @@ public class GameStage extends BaseStage<MainGame> {
 
         // 正在飞翔状态或者死亡状态执行生成水管的逻辑
         // 死亡并不代表游戏结束，有可能其他玩家还在飞翔
-        if (DataService.isServer()) {
+        if (CoreService.isServer()) {
             if (birdState == BirdState.fly || birdState == BirdState.die) {
                 // 累计下一次水管生成时间
                 generateBarTimeCounter += delta;
@@ -477,7 +477,7 @@ public class GameStage extends BaseStage<MainGame> {
                 birdGroup.setState(imei, BirdState.drop);
 
                 //如果所有小鸟都死亡并且自己是服务器
-                if (birdGroup.isAllBirdDied() && DataService.isServer()) {
+                if (birdGroup.isAllBirdDied() && CoreService.isServer()) {
                     getGame().send(DataFactory.packGameOver(birdGroup.getGrades()));
                 }
                 break;

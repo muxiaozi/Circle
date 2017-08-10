@@ -5,8 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 
-import cn.muxiaozi.circle.base.IConfig;
-import cn.muxiaozi.circle.net.DataFactory;
+import cn.muxiaozi.circle.core.IConfig;
+import cn.muxiaozi.circle.core.SystemPacket;
 import cn.muxiaozi.circle.net.IReceiver;
 import cn.muxiaozi.circle.net.ISender;
 
@@ -86,7 +86,7 @@ public abstract class BaseGame extends Game implements IReceiver {
         }
 
         //如果收到与服务器断开连接的消息，退出游戏
-        if (data[0] == DataFactory.TYPE_DISCONNECT_SERVER) {
+        if (data[0] == SystemPacket.TYPE_DISCONNECT_SERVER) {
             Gdx.app.exit();
         }
     }

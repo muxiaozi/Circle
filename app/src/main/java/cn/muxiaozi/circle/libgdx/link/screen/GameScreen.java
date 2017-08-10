@@ -3,7 +3,7 @@ package cn.muxiaozi.circle.libgdx.link.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 
-import cn.muxiaozi.circle.base.IConfig;
+import cn.muxiaozi.circle.core.IConfig;
 import cn.muxiaozi.circle.libgdx.BaseScreen;
 import cn.muxiaozi.circle.libgdx.link.MainGame;
 import cn.muxiaozi.circle.libgdx.link.stage.GameStage;

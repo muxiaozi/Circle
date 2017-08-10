@@ -2,7 +2,6 @@ package cn.muxiaozi.circle.version;
 
 /**
  * Created by 慕宵子 on 2016/8/30 0030.
- * Email: 1002042998@qq.com
  */
 public class VersionInfo {
     //版本号

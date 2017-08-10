@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import cn.muxiaozi.circle.R;
-import cn.muxiaozi.circle.base.IConfig;
+import cn.muxiaozi.circle.core.IConfig;
 import cn.muxiaozi.circle.utils.ImageUtil;
 import de.hdodenhof.circleimageview.CircleImageView;
 

@@ -8,8 +8,9 @@ import android.os.IBinder;
 
 import java.util.ArrayList;
 
-import cn.muxiaozi.circle.net.DataFactory;
-import cn.muxiaozi.circle.net.DataService;
+import cn.muxiaozi.circle.core.BasePresenter;
+import cn.muxiaozi.circle.core.SystemPacket;
+import cn.muxiaozi.circle.core.CoreService;
 import cn.muxiaozi.circle.net.IReceiver;
 import cn.muxiaozi.circle.utils.AsyncRun;
 import cn.muxiaozi.circle.utils.Config;
@@ -17,15 +18,15 @@ import cn.muxiaozi.circle.utils.Config;
 /**
  * Created by 慕宵子 on 2016/7/24.
  */
-class RoomPresenter extends RoomContract.Presenter implements IReceiver {
+class RoomPresenter extends BasePresenter<RoomView> implements IReceiver {
     private String myImei;
-    private DataService.MessageBinder mDeliver;
+    private CoreService.MessageBinder mDeliver;
 
-    RoomPresenter(Context context, RoomContract.View view) {
+    RoomPresenter(Context context, RoomView view) {
         super(context, view);
 
         //绑定消息服务器
-        Intent intent = new Intent(context, DataService.class);
+        Intent intent = new Intent(context, CoreService.class);
         context.bindService(intent, mConn, Context.BIND_AUTO_CREATE);
 
         myImei = Config.getImei(context);
@@ -37,7 +38,7 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
     private ServiceConnection mConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mDeliver = (DataService.MessageBinder) service;
+            mDeliver = (CoreService.MessageBinder) service;
             mDeliver.addObserver(RoomPresenter.this);
 
             //根据在线玩家列表初始化房间
@@ -45,7 +46,7 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
             mDeliver.fillPlayerList(playList);
 
             //如果是服务器，默认是准备状态
-            if (DataService.isServer()) {
+            if (CoreService.isServer()) {
                 prepare();
             }
         }
@@ -61,8 +62,8 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
     @Override
     public void receive(byte[] data) {
         switch (data[0]) {
-            case DataFactory.TYPE_PREPARE:
-                DataFactory.PrepareEntity playerEntity = DataFactory.unpackPrepareState(data);
+            case SystemPacket.TYPE_PREPARE:
+                SystemPacket.PrepareEntity playerEntity = SystemPacket.unpackPrepareState(data);
                 ArrayList<UserBean> players = mView.getPlayerList();
                 for (UserBean player : players) {
                     if (player.getImei().equals(playerEntity.imei)) {
@@ -73,8 +74,8 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
                 updatePlayerList();
                 break;
 
-            case DataFactory.TYPE_START_GAME:
-                final DataFactory.StartGameEntity entity = DataFactory.unpackStartGame(data);
+            case SystemPacket.TYPE_START_GAME:
+                final SystemPacket.StartGameEntity entity = SystemPacket.unpackStartGame(data);
                 AsyncRun.run(new Runnable() {
                     @Override
                     public void run() {
@@ -83,17 +84,17 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
                 });
                 break;
 
-            case DataFactory.TYPE_FRIEND_IN:
+            case SystemPacket.TYPE_FRIEND_IN:
                 mDeliver.fillPlayerList(mView.getPlayerList());
                 updatePlayerList();
                 break;
 
-            case DataFactory.TYPE_FRIEND_OUT:
+            case SystemPacket.TYPE_FRIEND_OUT:
                 mDeliver.fillPlayerList(mView.getPlayerList());
                 updatePlayerList();
                 break;
 
-            case DataFactory.TYPE_DISCONNECT_SERVER:
+            case SystemPacket.TYPE_DISCONNECT_SERVER:
                 AsyncRun.run(new Runnable() {
                     @Override
                     public void run() {
@@ -123,8 +124,8 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
     public void prepare() {
         mDeliver.setPrepare(true);
 
-        mDeliver.send(DataFactory.packPrepareState(
-                new DataFactory.PrepareEntity(myImei, true)));
+        mDeliver.send(SystemPacket.packPrepareState(
+                new SystemPacket.PrepareEntity(myImei, true)));
 
         ArrayList<UserBean> players = mView.getPlayerList();
         for (UserBean player : players) {
@@ -140,8 +141,8 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
     public void cancelPrepare() {
         mDeliver.setPrepare(false);
 
-        mDeliver.send(DataFactory.packPrepareState(
-                new DataFactory.PrepareEntity(myImei, false)));
+        mDeliver.send(SystemPacket.packPrepareState(
+                new SystemPacket.PrepareEntity(myImei, false)));
 
         ArrayList<UserBean> players = mView.getPlayerList();
         for (UserBean player : players) {
@@ -154,8 +155,8 @@ class RoomPresenter extends RoomContract.Presenter implements IReceiver {
     }
 
     @Override
-    public void startGame(DataFactory.StartGameEntity entity) {
-        mDeliver.send(DataFactory.packStartGame(entity));
+    public void startGame(SystemPacket.StartGameEntity entity) {
+        mDeliver.send(SystemPacket.packStartGame(entity));
     }
 
     private void updatePlayerList() {

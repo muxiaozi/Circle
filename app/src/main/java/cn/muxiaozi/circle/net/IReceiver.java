@@ -10,5 +10,5 @@ public interface IReceiver {
      * 接受数据
      * @param data 数据
      */
-    void receive(byte[] data);
+    void receive(byte[] data, byte type);
 }

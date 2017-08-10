@@ -1,7 +1,5 @@
 package cn.muxiaozi.circle.connect;
 
-import android.app.UiAutomation;
-
 import java.net.InetAddress;
 import java.util.List;
 
@@ -11,13 +9,6 @@ import java.util.List;
  * 连接接口
  */
 public interface IConnect {
-    /**
-     * 连接方式
-     */
-    int WIFI_AP = 1;    //wifi热点连接
-    int WIFI_P2P = 2;   //wifi direct连接
-    int BLUETOOTH = 3;  //蓝牙连接
-
     /**
      * 一般回调接口
      */

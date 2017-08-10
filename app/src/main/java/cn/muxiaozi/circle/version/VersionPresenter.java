@@ -12,6 +12,7 @@ import android.os.Message;
 import java.io.File;
 
 import cn.muxiaozi.circle.R;
+import cn.muxiaozi.circle.core.BasePresenter;
 import cn.muxiaozi.circle.utils.Config;
 
 /**
@@ -19,7 +20,7 @@ import cn.muxiaozi.circle.utils.Config;
  * <p>
  * 版本控制
  */
-public class VersionPresenter extends VersionContract.Presenter {
+public class VersionPresenter extends BasePresenter<VersionView> {
 
     private VersionModel mVersionModel;
     private NotificationManager mNotificationManager;
@@ -27,7 +28,7 @@ public class VersionPresenter extends VersionContract.Presenter {
 
     private static final int NOTIFY_ID = 2;
 
-    public VersionPresenter(Context context, VersionContract.View view) {
+    public VersionPresenter(Context context, VersionView view) {
         super(context, view);
         mVersionModel = new VersionModel();
         mNotificationManager = (NotificationManager)
@@ -38,7 +39,6 @@ public class VersionPresenter extends VersionContract.Presenter {
                 .setAutoCancel(true);
     }
 
-    @Override
     public void startUpgrade() {
         mVersionModel.downloadAPK(new Handler(new Handler.Callback() {
             @Override
@@ -70,7 +70,6 @@ public class VersionPresenter extends VersionContract.Presenter {
         }));
     }
 
-    @Override
     public void checkUpgrade() {
         if (mVersionModel.isDownloading()) {
             mView.showTips("正在下载更新...");
@@ -94,5 +93,6 @@ public class VersionPresenter extends VersionContract.Presenter {
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
     }
 }

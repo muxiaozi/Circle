@@ -53,7 +53,7 @@ public class CarouselLayout extends HorizontalScrollView implements View.OnClick
     //指示器画笔
     Paint mCirclePaint = new Paint();
 
-    private LinearLayout mWapper;
+    private LinearLayout mWrapper;
 
     private ArrayList<Integer> mGamesID;
 
@@ -65,11 +65,11 @@ public class CarouselLayout extends HorizontalScrollView implements View.OnClick
 
     public CarouselLayout(Context context) {
         this(context, null);
-        mWapper = new LinearLayout(getContext());
-        mWapper.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+        mWrapper = new LinearLayout(getContext());
+        mWrapper.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
-        mWapper.setOrientation(LinearLayout.HORIZONTAL);
-        addView(mWapper, 0);
+        mWrapper.setOrientation(LinearLayout.HORIZONTAL);
+        addView(mWrapper, 0);
     }
 
     public CarouselLayout(Context context, AttributeSet attrs) {
@@ -103,14 +103,14 @@ public class CarouselLayout extends HorizontalScrollView implements View.OnClick
 
     private void updatePage() {
         AssetManager assetManager = getContext().getAssets();
-        mWapper.removeAllViewsInLayout();
+        mWrapper.removeAllViewsInLayout();
         for (Integer gameID : mGamesID) {
             ImageView iv = new ImageView(getContext());
             iv.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
             iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
             iv.setImageBitmap(ImageUtil.getGameCover(assetManager, gameID));
-            mWapper.addView(iv);
+            mWrapper.addView(iv);
         }
         requestLayout();
     }
@@ -128,13 +128,13 @@ public class CarouselLayout extends HorizontalScrollView implements View.OnClick
         super.onFinishInflate();
         //如果布局中没有任何控件
         if (getChildCount() == 0) {
-            mWapper = new LinearLayout(getContext());
-            mWapper.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+            mWrapper = new LinearLayout(getContext());
+            mWrapper.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
-            mWapper.setOrientation(LinearLayout.HORIZONTAL);
-            addView(mWapper, 0);
+            mWrapper.setOrientation(LinearLayout.HORIZONTAL);
+            addView(mWrapper, 0);
         } else {
-            mWapper = (LinearLayout) getChildAt(0);
+            mWrapper = (LinearLayout) getChildAt(0);
         }
     }
 
@@ -149,9 +149,9 @@ public class CarouselLayout extends HorizontalScrollView implements View.OnClick
         setMeasuredDimension(width, height);
 
         //设置内容宽度
-        mWapper.setOnClickListener(this);
-        for (int i = 0; i < mWapper.getChildCount(); i++) {
-            mWapper.getChildAt(i).getLayoutParams().width = mScreenSize.x;
+        mWrapper.setOnClickListener(this);
+        for (int i = 0; i < mWrapper.getChildCount(); i++) {
+            mWrapper.getChildAt(i).getLayoutParams().width = mScreenSize.x;
         }
         measureChildren(widthMeasureSpec,
                 MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));

@@ -8,15 +8,15 @@ import android.os.IBinder;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 
-import cn.muxiaozi.circle.base.IConfig;
-import cn.muxiaozi.circle.net.DataService;
+import cn.muxiaozi.circle.core.IConfig;
+import cn.muxiaozi.circle.core.CoreService;
 import cn.muxiaozi.circle.net.ISender;
 
 /**
  * Created by 慕宵子 on 2016/9/18 0018.
  */
 public class LinkActivity extends AndroidApplication {
-    private DataService.MessageBinder mDeliver;
+    private CoreService.MessageBinder mDeliver;
     private MainGame game;
 
     @Override
@@ -28,13 +28,13 @@ public class LinkActivity extends AndroidApplication {
         game = new MainGame(players);
 
         initialize(game);
-        bindService(new Intent(this, DataService.class), conn, BIND_AUTO_CREATE);
+        bindService(new Intent(this, CoreService.class), conn, BIND_AUTO_CREATE);
     }
 
     ServiceConnection conn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mDeliver = (DataService.MessageBinder) service;
+            mDeliver = (CoreService.MessageBinder) service;
             mDeliver.addObserver(game);
             game.setSender(new ISender() {
                 @Override

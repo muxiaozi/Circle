@@ -6,5 +6,9 @@ package cn.muxiaozi.circle.net;
  * 发送数据接口
  */
 public interface ISender {
+    /**
+     * 发送数据包
+     * @param data 数据包
+     */
     void send(byte[] data);
 }

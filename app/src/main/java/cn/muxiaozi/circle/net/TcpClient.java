@@ -5,19 +5,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import cn.muxiaozi.circle.base.IConfig;
-import cn.muxiaozi.circle.room.UserBean;
-import cn.muxiaozi.circle.utils.LogUtil;
+import cn.muxiaozi.circle.core.IConfig;
 
-class TcpClient implements Runnable, ISocket {
+public class TcpClient implements Runnable, ISocket {
     //IP
     private String mRemoteIP;
 
     //socket对象
     private Socket mSocket;
-
-    //处理消息的Service
-    private IDataService mDelivery;
 
     //输入输出流
     private DataInputStream dis;
@@ -26,9 +21,8 @@ class TcpClient implements Runnable, ISocket {
     //是否连接
     private boolean isRunning;
 
-    TcpClient(IDataService listener, String remoteIP) {
+    TcpClient(String remoteIP) {
         mRemoteIP = remoteIP;
-        mDelivery = listener;
 
         isRunning = true;
         new Thread(this).start();
@@ -39,19 +33,13 @@ class TcpClient implements Runnable, ISocket {
 
         try {
             mSocket = new Socket(mRemoteIP, IConfig.LOCAL_PORT);
-            LogUtil.i("Client成功连接到服务器...");
 
             //获取输入输出流
             dos = new DataOutputStream(mSocket.getOutputStream());
             dis = new DataInputStream(mSocket.getInputStream());
 
             //把自己的信息发送到服务器
-            mDelivery.getMyInfo(new IDataService.IGetUserInfo() {
-                @Override
-                public void onGet(UserBean bean) {
-                    send(DataFactory.packFriendIn(bean));
-                }
-            });
+
 
             //数据包长度
             int length = -1;
@@ -61,14 +49,10 @@ class TcpClient implements Runnable, ISocket {
                 dis.readFully(data, 0, length);
 
                 //处理数据包
-                mDelivery.receive(data);
             }
-            LogUtil.i("Client断开:isRunning:" + isRunning + ",length = " + length);
         } catch (Exception e) {
             e.printStackTrace();
-            LogUtil.i("Client断开:" + e.toString());
         } finally {
-            mDelivery.receive(DataFactory.packDisconnectServer());
             try {
                 if (mSocket != null)
                     mSocket.close();

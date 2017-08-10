@@ -14,7 +14,7 @@ import cn.muxiaozi.circle.libgdx.flappy_bird.DataFactory;
 import cn.muxiaozi.circle.libgdx.flappy_bird.Res;
 import cn.muxiaozi.circle.libgdx.BaseActor;
 import cn.muxiaozi.circle.libgdx.BaseStage;
-import cn.muxiaozi.circle.net.DataService;
+import cn.muxiaozi.circle.core.CoreService;
 
 /**
  * 游戏结束时显示的舞台
@@ -78,7 +78,7 @@ public class GameOverStage extends BaseStage<MainGame> {
         restartButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (DataService.isServer()) {
+                if (CoreService.isServer()) {
                     getGame().send(DataFactory.packRequestPrepare());
                     if (getGame().hasSounds()) {
                         restartSound.play();

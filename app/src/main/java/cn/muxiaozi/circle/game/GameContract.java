@@ -2,8 +2,8 @@ package cn.muxiaozi.circle.game;
 
 import android.content.Context;
 
-import cn.muxiaozi.circle.base.BasePresenter;
-import cn.muxiaozi.circle.base.BaseView;
+import cn.muxiaozi.circle.core.BasePresenter;
+import cn.muxiaozi.circle.core.BaseView;
 
 /**
  * Created by 慕宵子 on 2016/7/19.

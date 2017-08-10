@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.Disposable;
 
 import cn.muxiaozi.circle.libgdx.flappy_bird.screen.GameScreen;
 import cn.muxiaozi.circle.libgdx.BaseGame;
-import cn.muxiaozi.circle.net.DataFactory;
+import cn.muxiaozi.circle.core.SystemPacket;
 
 /**
  * 游戏主程序入口类
@@ -204,7 +204,7 @@ public class MainGame extends BaseGame {
 
     @Override
     public void receive(byte[] data) {
-        if (data[0] == DataFactory.TYPE_DISCONNECT_SERVER) {
+        if (data[0] == SystemPacket.TYPE_DISCONNECT_SERVER) {
             Gdx.app.exit();
         }
         super.receive(data);

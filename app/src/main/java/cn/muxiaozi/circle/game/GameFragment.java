@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import cn.muxiaozi.circle.R;
-import cn.muxiaozi.circle.base.IConfig;
+import cn.muxiaozi.circle.core.IConfig;
 import cn.muxiaozi.circle.room.RoomActivity;
 import cn.muxiaozi.circle.view.CarouselLayout;
 import cn.muxiaozi.circle.view.RecycleViewDivider;

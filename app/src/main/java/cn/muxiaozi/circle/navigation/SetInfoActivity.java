@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import cn.muxiaozi.circle.R;
-import cn.muxiaozi.circle.base.IConfig;
+import cn.muxiaozi.circle.core.IConfig;
 import cn.muxiaozi.circle.room.UserBean;
 import cn.muxiaozi.circle.utils.ImageUtil;
 import cn.muxiaozi.circle.utils.Config;

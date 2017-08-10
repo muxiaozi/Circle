@@ -9,6 +9,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,6 +24,8 @@ import cn.muxiaozi.circle.utils.Config;
  * wifi操作模块
  */
 class WifiModel {
+    private static final String TAG = "WifiModel";
+
     private WifiManager mWifiManager;
     private ConnectivityManager mConnectivityManager;
     private TelephonyManager mTelephonyManager;
@@ -40,7 +43,7 @@ class WifiModel {
         mConnectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         mTelephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
-        mMySSID = "shw" + Config.getName(context);
+        mMySSID = "shw" + Config.getName();
     }
 
     /**

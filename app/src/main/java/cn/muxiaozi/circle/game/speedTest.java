@@ -14,16 +14,15 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import cn.muxiaozi.circle.R;
-import cn.muxiaozi.circle.net.DataService;
+import cn.muxiaozi.circle.core.CoreService;
 import cn.muxiaozi.circle.net.IReceiver;
-import cn.muxiaozi.circle.utils.LogUtil;
 
 /**
  * Created by 慕宵子 on 2016/10/1 0001.
  */
 
 public class speedTest extends AppCompatActivity implements IReceiver {
-    private DataService.MessageBinder mDeliver;
+    private CoreService.MessageBinder mDeliver;
     boolean isRunning = true;
 
     @Override
@@ -31,9 +30,9 @@ public class speedTest extends AppCompatActivity implements IReceiver {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speedtest);
 
-        bindService(new Intent(this, DataService.class), conn, BIND_AUTO_CREATE);
+        bindService(new Intent(this, CoreService.class), conn, BIND_AUTO_CREATE);
 
-        if (DataService.isServer()) {
+        if (CoreService.isServer()) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -91,7 +90,7 @@ public class speedTest extends AppCompatActivity implements IReceiver {
     ServiceConnection conn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            mDeliver = (DataService.MessageBinder) service;
+            mDeliver = (CoreService.MessageBinder) service;
             mDeliver.addObserver(speedTest.this);
         }
 
@@ -106,7 +105,7 @@ public class speedTest extends AppCompatActivity implements IReceiver {
     @Override
     public void receive(byte[] data) {
         LogUtil.d("receive:" + System.currentTimeMillis() + "," + unpackFriendOut(data));
-        if (DataService.isServer()) {
+        if (CoreService.isServer()) {
             LogUtil.d("fps:" + (System.currentTimeMillis() - unpackFriendOut(data)));
         } else {
             if (mDeliver != null) {

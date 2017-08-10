@@ -1,5 +1,6 @@
 package cn.muxiaozi.circle.main;
 
+import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -43,6 +44,7 @@ import cn.muxiaozi.circle.utils.Config;
 import cn.muxiaozi.circle.utils.NetWorkUtil;
 import cn.muxiaozi.circle.view.FloatingActionMenu;
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class MainActivity extends AppCompatActivity implements MainContract.View, VersionContract.View {
     private MainContract.Presenter mMainPresenter;

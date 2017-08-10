@@ -9,11 +9,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import cn.muxiaozi.circle.base.IConfig;
-import cn.muxiaozi.circle.room.UserBean;
-import cn.muxiaozi.circle.utils.LogUtil;
+import cn.muxiaozi.circle.core.IConfig;
 
-class TcpServer implements Runnable, ISocket {
+public class TcpServer implements Runnable, ISocket {
 
     //服务端ServerSocket对象
     private static ServerSocket mServerSocket;
@@ -21,15 +19,10 @@ class TcpServer implements Runnable, ISocket {
     private final Set<Socket> mSockets = Collections.synchronizedSet(
             new HashSet<Socket>(IConfig.MAX_CLIENT_NUM));
 
-    //保存Service对象
-    private IDataService mDelivery;
-
     //Server运行状态
     private boolean isRunning;
 
-    TcpServer(IDataService delivery) {
-        mDelivery = delivery;
-
+    TcpServer() {
         //开启端口监听线程
         isRunning = true;
         new Thread(this).start();
@@ -39,7 +32,6 @@ class TcpServer implements Runnable, ISocket {
     public void run() {
         try {
             mServerSocket = new ServerSocket(IConfig.LOCAL_PORT);
-            LogUtil.i("服务器监听端口" + IConfig.LOCAL_PORT + "...");
 
             while (isRunning) {
                 Socket socket = mServerSocket.accept();
@@ -54,8 +46,6 @@ class TcpServer implements Runnable, ISocket {
 
         } catch (Exception ignored) {
         } finally {
-            LogUtil.i("Server已关闭!");
-            mDelivery.receive(DataFactory.packDisconnectServer());
             try {
                 if (mServerSocket != null) {
                     mServerSocket.close();
@@ -87,13 +77,7 @@ class TcpServer implements Runnable, ISocket {
                 dis = new DataInputStream(socket.getInputStream());
                 dos = new DataOutputStream(socket.getOutputStream());
 
-                //给新连入的客户端发送大厅中的其他人信息
-                mDelivery.getOnlineUserInfo(new IDataService.IGetUserInfo() {
-                    @Override
-                    public void onGet(UserBean bean) {
-                        sendDataToSender(DataFactory.packFriendIn(bean));
-                    }
-                });
+                //TODO 给新连入的客户端发送大厅中的其他人信息
 
                 int length; //获取数据包长度
                 while (isRunning && (length = dis.readInt()) != -1) {
@@ -101,35 +85,18 @@ class TcpServer implements Runnable, ISocket {
                     byte[] data = new byte[length];
                     dis.readFully(data, 0, length);
 
-                    //如果是新加入的信息，则记录下来
-                    if (data[0] == DataFactory.TYPE_FRIEND_IN) {
-                        mDelivery.getOnlineUserInfo(new IDataService.IGetUserInfo() {
-                            @Override
-                            public void onGet(UserBean bean) {
-                                sendDataToSender(DataFactory.packFriendIn(bean));
-                            }
-                        });
-                        imei = DataFactory.unpackFriendIn(data).getImei();
-                        LogUtil.i("新用户：" + imei);
-                    }
+                    //TODO 如果是新加入的信息，则记录下来
 
-                    mDelivery.receive(data);
 
-                    //如果是偶数就转发
-                    if ((data[0] & 1) == 0) {
-                        sendDataExceptOne(data, socket);
-                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                LogUtil.i("客户端" + imei + "断开连接...");
-
                 //给所有客户端发送某个客户离开的消息
                 if (imei != null) {
-                    final byte[] outData = DataFactory.packFriendOut(imei);
-                    sendDataExceptOne(outData, socket);
-                    mDelivery.receive(outData);
+//                    final byte[] outData = SystemPacket.packFriendOut(imei);
+//                    sendDataExceptOne(outData, socket);
+//                    mDelivery.receive(outData);
                 }
 
                 //把客户端从客户端集合中移除

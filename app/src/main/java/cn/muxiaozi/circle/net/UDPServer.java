@@ -9,16 +9,16 @@ import java.util.Iterator;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import cn.muxiaozi.circle.base.IConfig;
+import cn.muxiaozi.circle.core.IConfig;
+import cn.muxiaozi.circle.core.SystemPacket;
 import cn.muxiaozi.circle.room.UserBean;
-import cn.muxiaozi.circle.utils.LogUtil;
 
 /**
  * Created by 慕宵子 on 2016/7/17.
  * <p/>
  * UDP服务端
  */
-class UDPServer implements Runnable, ISocket {
+public class UDPServer implements Runnable, ISocket {
 
     /**
      * Service回调
@@ -103,14 +103,14 @@ class UDPServer implements Runnable, ISocket {
                  * 如果接受到该客户端心跳反馈，则再-1
                  */
                 if (System.currentTimeMillis() - startTime > INTERVAL_HEART_BEAT) {
-                    sendExceptOne(DataFactory.packHeartBeat(), null);
+                    sendExceptOne(SystemPacket.packHeartBeat(), null);
 
                     Iterator<ClientEntity> iterator = mClients.iterator();
                     while (iterator.hasNext()) {
                         ClientEntity entity = iterator.next();
                         if (entity.noReplyCount++ > 2) {
-                            mListener.receive(DataFactory.packFriendOut(entity.imei));
-                            sendExceptOne(DataFactory.packFriendOut(entity.imei), entity.address);
+                            mListener.receive(SystemPacket.packFriendOut(entity.imei));
+                            sendExceptOne(SystemPacket.packFriendOut(entity.imei), entity.address);
                             iterator.remove();
                         }
                     }
@@ -126,7 +126,7 @@ class UDPServer implements Runnable, ISocket {
                 if ((tmpPacket = receiveQueue.poll()) != null) {
                     tmpData = tmpPacket.getData();
 
-                    if (tmpData[0] == DataFactory.TYPE_HEART_BEAT) {
+                    if (tmpData[0] == SystemPacket.TYPE_HEART_BEAT) {
                         for (ClientEntity entity : mClients) {
                             if (entity.address.equals(tmpPacket.getAddress())) {
                                 entity.noReplyCount--;
@@ -134,16 +134,16 @@ class UDPServer implements Runnable, ISocket {
                             }
                         }
                     } else {
-                        if (tmpData[0] == DataFactory.TYPE_FRIEND_IN) {
+                        if (tmpData[0] == SystemPacket.TYPE_FRIEND_IN) {
                             mListener.getOnlineUserInfo(new IDataService.IGetUserInfo() {
                                 @Override
                                 public void onGet(UserBean bean) {
-                                    sendToOne(DataFactory.packFriendIn(bean), tmpPacket.getAddress());
+                                    sendToOne(SystemPacket.packFriendIn(bean), tmpPacket.getAddress());
                                 }
                             });
 
                             mClients.add(new ClientEntity(
-                                    DataFactory.unpackFriendIn(tmpData).getImei(),
+                                    SystemPacket.unpackFriendIn(tmpData).getImei(),
                                     tmpPacket.getAddress()));
                         }
 

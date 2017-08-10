@@ -13,13 +13,13 @@ import android.widget.Button;
 import java.util.ArrayList;
 
 import cn.muxiaozi.circle.R;
-import cn.muxiaozi.circle.base.IConfig;
+import cn.muxiaozi.circle.core.IConfig;
 import cn.muxiaozi.circle.game.GameID;
+import cn.muxiaozi.circle.game.speedTest;
 import cn.muxiaozi.circle.libgdx.flappy_bird.FlappyBirdActivity;
 import cn.muxiaozi.circle.libgdx.link.LinkActivity;
-import cn.muxiaozi.circle.game.speedTest;
-import cn.muxiaozi.circle.net.DataFactory;
-import cn.muxiaozi.circle.net.DataService;
+import cn.muxiaozi.circle.core.SystemPacket;
+import cn.muxiaozi.circle.core.CoreService;
 import cn.muxiaozi.circle.utils.ToastUtil;
 import cn.muxiaozi.circle.view.RecycleViewDivider;
 
@@ -28,9 +28,9 @@ import cn.muxiaozi.circle.view.RecycleViewDivider;
  * <p/>
  * 游戏大厅
  */
-public class RoomActivity extends AppCompatActivity implements RoomContract.View,
+public class RoomActivity extends AppCompatActivity implements RoomView,
         View.OnClickListener {
-    private RoomContract.Presenter mRoomPresenter;
+    private RoomPresenter mRoomPresenter;
 
     private int mGameID;
 
@@ -62,13 +62,13 @@ public class RoomActivity extends AppCompatActivity implements RoomContract.View
         initToolBar("游戏大厅");
 
         mBtnStart = (Button) findViewById(R.id.btn_prepare);
-        if(mBtnStart != null){
+        if (mBtnStart != null) {
             mBtnStart.setOnClickListener(this);
         }
 
         mGameID = getIntent().getIntExtra(IConfig.KEY_GAME_ID, GameID.NULL);
 
-        isServer = DataService.isServer();
+        isServer = CoreService.isServer();
         if (isServer) {
             mBtnStart.setText("开始游戏");
         } else {
@@ -123,8 +123,8 @@ public class RoomActivity extends AppCompatActivity implements RoomContract.View
                     players[i] = mPlayers.get(i).getImei();
                 }
                 //构造开始游戏实体
-                DataFactory.StartGameEntity entity =
-                        new DataFactory.StartGameEntity(mGameID, players);
+                SystemPacket.StartGameEntity entity =
+                        new SystemPacket.StartGameEntity(mGameID, players);
                 //通知其他人开始游戏
                 mRoomPresenter.startGame(entity);
                 startGame(entity);
@@ -155,7 +155,7 @@ public class RoomActivity extends AppCompatActivity implements RoomContract.View
     }
 
     @Override
-    public void startGame(DataFactory.StartGameEntity entity) {
+    public void startGame(SystemPacket.StartGameEntity entity) {
         Intent intent;
         switch (entity.gameID) {
             case GameID.FIND_ME:
